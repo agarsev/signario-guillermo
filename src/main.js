@@ -1,4 +1,5 @@
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron');
+const path = require('path');
 
 function MainWindow (dir) {
   Menu.setApplicationMenu(Menu.buildFromTemplate([{
@@ -34,9 +35,10 @@ function MainWindow (dir) {
   const win = new BrowserWindow({
     webPreferences: {
       spellcheck: false,
+      preload: path.join(__dirname, 'table/back.js'),
     },
   });
-  win.loadFile('dist/index.html')
+  win.loadFile('dist/table/index.html');
 }
 
 app.on('window-all-closed', () => {

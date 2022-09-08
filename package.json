@@ -7,9 +7,11 @@
     "start": "electron ."
   },
   "targets": {
-    "electron": {
-      "source": "src/index.html",
-      "publicUrl": "./"
+    "table": {
+      "context": "electron-renderer",
+      "source": "src/table/index.html",
+      "publicUrl": "./",
+      "distDir": "dist/table"
     }
   },
   "author": "Antonio F. G. Sevilla <afgs@ucm.es>",
@@ -33,8 +35,7 @@
       "dist/*.js",
       "dist/*.css",
       "src/main.js",
-      "src/api.js",
-      "src/preload.js"
+      "src/*/back.js"
     ],
     "linux": {
       "target": "AppImage"
