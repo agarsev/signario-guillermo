@@ -4,11 +4,11 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps"
   },
   "targets": {
     "table": {
-      "context": "electron-renderer",
       "source": "src/table/index.html",
       "publicUrl": "./",
       "distDir": "dist/table"
@@ -17,12 +17,13 @@
   "author": "Antonio F. G. Sevilla <afgs@ucm.es>",
   "license": "OSL-3.0",
   "dependencies": {
+    "better-sqlite3": "^7.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
-    "electron": "^20.1.1",
+    "electron": "^18.3.11",
     "electron-builder": "^23.1.0",
     "parcel": "^2.6.2",
     "postcss": "^8.4.14",
@@ -31,9 +32,9 @@
   "build": {
     "appId": "com.garciasevilla.guillermo",
     "files": [
-      "dist/*.html",
-      "dist/*.js",
-      "dist/*.css",
+      "dist/*/*.html",
+      "dist/*/*.js",
+      "dist/*/*.css",
       "src/main.js",
       "src/*/back.js"
     ],
