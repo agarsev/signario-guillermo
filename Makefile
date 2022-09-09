@@ -2,17 +2,22 @@ all:
 	echo "build o frontend"
 
 build:
-	@mkdir -p dist
-	NODE_ENV=production parcel build --no-autoinstall 
-	electron-builder -l -w
+	echo "?"
+	#NODE_ENV=production parcel build --no-autoinstall 
+	##electron-builder -l -w
 
-frontend:
-	@mkdir -p dist
-	NODE_ENV=development parcel build \
-			 --no-autoinstall --no-content-hash --no-cache \
-			 --no-optimize
+frontend: dist/table/index.html dist/detail/index.html
 
 clean:
 	rm -rf dist
 
 .PHONY: all build frontend clean
+
+.SECONDEXPANSION:
+
+dist/%/index.html: $$(wildcard src/$$*/*)
+	echo $^
+	@mkdir -p $(@D)
+	NODE_ENV=development parcel build \
+			 --no-autoinstall --no-content-hash --no-cache \
+			 --no-optimize --target $*

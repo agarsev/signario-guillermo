@@ -1,4 +1,4 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 const db = require('better-sqlite3')('../data/signario.db', {
     fileMustExist: true,
@@ -14,6 +14,8 @@ let numPages = numberOfPages();
 
 contextBridge.exposeInMainWorld('back', {
 
+    openDetail: number => ipcRenderer.invoke('open_detail', number),
+
     select: function (page) {
         const order = 'number';
         const asc = true;
@@ -23,4 +25,5 @@ contextBridge.exposeInMainWorld('back', {
         ;`).all();
         return { rows, numPages };
     }
+
 });
