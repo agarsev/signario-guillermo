@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-const { db } = require('../common.js');
+const { db } = require('../common/back.js');
 
 const PAGE_SIZE = 50;
 function numberOfPages() {
