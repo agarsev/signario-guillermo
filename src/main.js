@@ -80,6 +80,7 @@ ipcMain.handle('open_detail', (_, number) => {
         preload: path.join(__dirname, 'detail/back.js'),
       },
     });
+    detail_window.on('closed', () => { detail_window = null; });
   }
   loadDetail(number);
 });

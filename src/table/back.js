@@ -1,8 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-const db = require('better-sqlite3')('../data/signario.db', {
-    fileMustExist: true,
-});
+const { db } = require('../common.js');
 
 const PAGE_SIZE = 50;
 function numberOfPages() {
