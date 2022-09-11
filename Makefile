@@ -21,3 +21,5 @@ dist/%/index.html: $$(wildcard src/$$*/*)
 	NODE_ENV=development parcel build \
 			 --no-autoinstall --no-content-hash --no-cache \
 			 --no-optimize --target $*
+
+dist/detail/index.html: src/signotator.js

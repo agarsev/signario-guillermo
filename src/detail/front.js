@@ -1,7 +1,8 @@
 import { createRoot } from "react-dom/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { debounce } from '../common/front.js';
+import Signotator from '../signotator.js';
 
 const saveDB = debounce(600);
 const msgDB = debounce(3500);
@@ -43,7 +44,7 @@ function DetailFront () {
             <VideoPlay />
         </header>
         <button onClick={() => updInfo(original_info)}>Revertir todos los cambios</button>
-        <span class="ml-2 italic text-sm text-gray-800">{saveMSG[saveStatus]}</span>
+        <span className="ml-2 italic text-sm text-gray-800">{saveMSG[saveStatus]}</span>
         {info!==null?<Info update={updInfo} {...info} />:null}
     </>;
 }
@@ -56,15 +57,19 @@ function VideoPlay () {
 }
 
 function Info ({ gloss, notation, update, modified_by, modified_at }) {
-    return <table><tbody>
+    const notationInput = useRef();
+    return <>
+        <table><tbody>
         <tr><td colSpan="2">Entrada por {modified_by} el {modified_at}</td></tr>
         <tr><th>Glosa:</th>
             <td><input type="text" value={gloss}
                 onChange={e => update({gloss: e.target.value})} /></td>
         </tr>
         <tr><th>Signotación:</th>
-            <td><input type="text" value={notation}
+            <td><input type="text" value={notation} ref={notationInput}
                 onChange={e => update({notation: e.target.value})} /></td>
         </tr>
-    </tbody></table>;
+        </tbody></table>
+        <Signotator inputRef={notationInput} updateVal={notation => update({notation})} />
+    </>
 }
