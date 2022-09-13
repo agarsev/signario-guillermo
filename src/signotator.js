@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import './signotator.css';
+
 let tabComponent = {};
 
 export default function Signotator ({ inputRef, updateVal }) {
@@ -22,7 +24,9 @@ tabComponent.Q = function ({ done }) {
     function SelButton ({ opts }) {
         const choice = opts.find(o => (o[0] == picam || o[1] == picam)) || opts[0];
         const actual = picam == choice[1];
-        return <button onClick={() => setPicam(actual?null:choice[1])}>{choice[2]}</button>;
+        return <button disabled={!actual && picam !== null && picam !== choice[0]}
+            className={actual?"actual":""}
+            onClick={() => setPicam(actual?null:choice[1])}>{choice[2]}</button>;
     }
     return <div className="grid grid-cols-4">
         <SelButton opts={[[null, "picam", "#"]]} />
@@ -47,6 +51,17 @@ tabComponent.Q = function ({ done }) {
         <SelButton opts={[[null, "picam", "O"],
                           ["c", "ca", "CA"]]} />
 
-        <button onClick={() => done(picam)}>✔</button>
+        <div className="divider" />
+        <button>c</button>
+        <button>r</button>
+        <button>g</button>
+
+        <div className="divider" />
+        <button>-</button>
+        <button>+</button>
+        <button>O</button>
+
+        <div className="divider" />
+        <button className="col-end-5" onClick={() => done(picam)}>✔</button>
     </div>;
 }

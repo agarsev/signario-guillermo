@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+    .Signotator {
+        @apply inline-block border border-primary-600 m-4 p-1 rounded;
+        & > nav {
+            @apply flex space-x-1;
+            & button {
+                @apply p-1 flex-1;
+                @apply border-x border-t border-primary-600/50 rounded-t;
+                &:disabled { @apply border-primary-600 bg-primary-200/50; }
+                &:hover { @apply border-primary-600 bg-primary-200; }
+            }
+        }
+    }
+
+    .Signotator > div {
+        @apply p-1 border border-primary-600;
+        &.grid { @apply gap-1; }
+        & .divider { @apply border-t border-primary-600 -mx-1 my-0 col-start-1; }
+        &.grid-cols-4 .divider { @apply col-end-5; }
+
+        & button {
+            @apply rounded border border-gray-600;
+            &:not(:disabled) { @apply border-primary-600 bg-primary-200/50 hover:bg-primary-200; }
+            &.actual { @apply bg-primary-200; }
+        }
+    }
+
+}
