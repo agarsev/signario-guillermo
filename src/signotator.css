@@ -11,7 +11,7 @@
             & button {
                 @apply p-1 flex-1;
                 @apply border-x border-t border-primary-600/50 rounded-t;
-                &:disabled { @apply border-primary-600 bg-primary-200/50; }
+                &:disabled { @apply border-primary-600 bg-primary-200; }
                 &:hover { @apply border-primary-600 bg-primary-200; }
             }
         }
