@@ -55,58 +55,81 @@ tabComponent.Q = function ({ done }) {
             onClick={actual?reset:onClick}>{display}</button>;
     }
 
-    return <div className="grid grid-cols-4">
-        <SelButton opts={[[null, "picam", "#"]]} />
-        <SelButton opts={[[null, "i", "I"],
+    return <div><table>
+        <tbody>
+            <tr><td>
+                <SelButton opts={[[null, "i", "I"],
                           ["p", "pi", "L"],
                           ["m", "im", "IM"]]} />
-        <SelButton opts={[[null, "ic", "V"],
-                          ["p", "pic", "H"]]} />
-        <SelButton opts={[[null, "icam", "B"],
-                          ["ic", "ica", "W"]]} />
+            </td><td>
+                <SelButton opts={[[null, "ic", "V"],
+                                  ["p", "pic", "H"]]} />
+            </td><td>
+                <SelButton opts={[[null, "c", "C"],
+                                  ["ic", "ica", "W"],
+                                  ["p", "pc", "PC"]]} />
+            </td><td className="!border-b">
+                <SelButton opts={[[null, "icam", "B"],
+                                  ["c", "ca", "CA"]]} />
+            </td></tr>
 
-        <SelButton opts={[[null, "p", "P"],
-                          ["i", "pi", "L"],
-                          ["ic", "pic", "H"],
-                          ["c", "pc", "PC"],
-                          ["m", "pm", "PM"]]} />
-        <SelButton opts={[[null, "m", "M"],
-                          ["p", "pm", "PM"],
-                          ["i", "im", "IM"]]} />
-        <SelButton opts={[[null, "c", "C"],
-                          ["p", "pc", "PC"]]} />
-        <SelButton opts={[[null, "picam", "O"],
-                          ["c", "ca", "CA"]]} />
+            <tr><td>
+                <SelButton opts={[[null, "p", "P"],
+                                  ["i", "pi", "L"],
+                                  ["ic", "pic", "H"],
+                                  ["c", "pc", "PC"],
+                                  ["m", "pm", "PM"]]} />
+            </td><td>
+                <SelButton opts={[[null, "m", "M"],
+                                  ["p", "pm", "PM"],
+                                  ["i", "im", "IM"]]} />
+            </td><td>
+                <SelButton opts={[[null, "picam", "O"]]} />
+            </td><td className="!border-l">
+                <SelButton opts={[[null, "picam", "#", ["#", "", false]]]} />
+            </td></tr>
 
-        <div className="divider" />
-        <ToggleButton enabled={true} actual={flex==""} display="E"
-            onClick={() => setFlex("")} />
-        <ToggleButton enabled={true} actual={flex=="c"} display="c"
-            onClick={() => setFlex("c")} />
-        <ToggleButton enabled={true} actual={flex=="r"} display="r"
-            onClick={() => setFlex("r")} />
-        <ToggleButton enabled={true} actual={flex=="g"} display="g"
-            onClick={() => setFlex("g")} />
+            <tr><td className="!border-y">
+                <ToggleButton enabled={true} actual={flex==""} display="E"
+                    onClick={() => setFlex("")} />
+            </td><td className="!border-y">
+                <ToggleButton enabled={true} actual={flex=="c"} display="c"
+                    onClick={() => setFlex("c")} />
+            </td><td className="!border-y">
+                <ToggleButton enabled={true} actual={flex=="r"} display="r"
+                    onClick={() => setFlex("r")} />
+            </td><td className="!border-b">
+                <ToggleButton enabled={true} actual={flex=="g"} display="g"
+                    onClick={() => setFlex("g")} />
+            </td></tr>
 
-        <div className="divider" />
-        <SelButton opts={[[null, "pcam", "D", ["c", "+", true]], //pcam+O
-                          ["pi", "ip", "T", ["r", "", true]],   // iprO
-                          ["ic", "ci", "R", ["", "", false]]]} />
+            <tr><td>
+                <SelButton opts={[[null, "pcam", "D", ["c", "+", true]], //pcam+O
+                                  ["pi", "ip", "T", ["r", "", true]],   // iprO
+                                  ["ic", "ci", "R", ["", "", false]]]} />
+            </td><td className="!border-l !border-b">
+                <ToggleButton enabled={["ic", "ica", "icam", "pi", "pic", "picam"].includes(picam)}
+                    actual={touch=="-"} display="-"
+                    onClick={() => setTouch("-")} />
+            </td><td className="!border-r !border-b">
+                <ToggleButton enabled={picam?.startsWith("p")}
+                    actual={touch=="+"} display="+"
+                    onClick={() => setTouch("+")} />
+            </td><td className="!border-b">
+                <ToggleButton enabled={picam?.length<5}
+                    actual={others} display="O"
+                    onClick={() => setOthers(!others)} />
+            </td></tr>
 
-        <ToggleButton enabled={["ic", "ica", "icam", "pi", "pic", "picam"].includes(picam)}
-            actual={touch=="-"} display="-"
-            onClick={() => setTouch("-")} />
-        <ToggleButton enabled={picam?.startsWith("p")}
-            actual={touch=="+"} display="+"
-            onClick={() => setTouch("+")} />
-        <ToggleButton enabled={picam?.length<5}
-            actual={others} display="O"
-            onClick={() => setOthers(!others)} />
-
-        <SelButton opts={[[null, "pi", "F", ["r", "-", true]]]} />
-        <SelButton opts={[[null, "pi", "S", ["c", "-", true]]]} />
-        <SelButton opts={[[null, "pi", "LL", ["g", "+", false]]]} />
-
-        <button disabled={picam===null} onClick={finish}>✔</button>
-    </div>;
+            <tr><td>
+                <SelButton opts={[[null, "pi", "F", ["r", "-", true]]]} />
+            </td><td>
+                <SelButton opts={[[null, "pi", "S", ["c", "-", true]]]} />
+            </td><td>
+                <SelButton opts={[[null, "pi", "LL", ["g", "+", false]]]} />
+            </td><td className="!border-l">
+                <button className="finish" disabled={picam===null} onClick={finish}>✔</button>
+            </td></tr>
+        </tbody>
+    </table></div>;
 }

@@ -18,15 +18,19 @@
     }
 
     .Signotator > div {
-        @apply p-1 border border-primary-600;
-        &.grid { @apply gap-1; }
-        & .divider { @apply border-t border-primary-600 -mx-1 my-0 col-start-1; }
-        &.grid-cols-4 .divider { @apply col-end-5; }
-
+        @apply border border-primary-600;
+        & td {
+            @apply p-1 border-0 border-secondary-600;
+            &:first-child { @apply pl-2; }
+            &:last-child { @apply pr-2; }
+        }
+        & tr:first-child td { @apply pt-2; }
+        & tr:last-child td { @apply pb-2; }
         & button {
-            @apply rounded border border-gray-600;
-            &:not(:disabled) { @apply border-primary-600 bg-primary-200/50 hover:bg-primary-200; }
-            &.actual { @apply bg-primary-200; }
+            @apply w-8 rounded border border-gray-600;
+            &:not(:disabled) { @apply border-secondary-600 bg-secondary-200/50 hover:bg-secondary-300; }
+            &.actual { @apply bg-secondary-300; }
+            &.finish:not(:disabled) { @apply border-primary-600 bg-primary-300/50 hover:bg-primary-300; }
         }
     }
 
