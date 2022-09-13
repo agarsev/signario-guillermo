@@ -34,4 +34,14 @@
         }
     }
 
+    .Signotator svg {
+        @apply p-2;
+        & .Arrow {
+            vector-effect: non-scaling-stroke;
+            @apply fill-secondary-200/50 stroke-secondary-600;
+            &:hover { @apply cursor-pointer fill-secondary-300; }
+            &.actual { @apply fill-secondary-300; }
+        }
+    }
+
 }
