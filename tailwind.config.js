@@ -8,6 +8,7 @@ module.exports = {
       primary: colors.amber,
       secondary: colors.violet,
       white: colors.white,
+      transparent: 'transparent',
     }
   },
   variants: {},
