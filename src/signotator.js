@@ -10,11 +10,23 @@ export default function Signotator ({ inputRef, updateVal }) {
     const [tab, setTab] = useState("Q");
     const Component = tabComponent[tab];
     const appendSN = SN => {
-        const upd = inputRef.current.value + SN;
+        const ip = inputRef.current;
+        const start = ip.selectionStart;
+        const end = ip.selectionEnd;
+        let before = ip.value.slice(0, start);
+        let after = ip.value.slice(end);
+        if ((start == end) && (start < ip.value.length)) {
+            before = before.slice(0, before.lastIndexOf(":"));
+            let aio = after.indexOf(":");
+            after = aio<0?"":after.slice(aio);
+        }
+        const upd = before + SN + after;
         updateVal(upd.replace(fixColons, ""));
         setTab(Component.nextTab);
     };
-    return <div className="Signotator">
+    return <div className="Signotator" onClick={e => {
+        e.preventDefault(); e.stopPropagation(); inputRef.current.focus();
+        }} >
         <nav>{["Q", "O", "L", "D", "R"].map(seg=> <button key={seg}
                 disabled={tab==seg} onClick={() => setTab(seg)}>
             {seg}</button>)}</nav>
