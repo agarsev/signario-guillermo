@@ -9,6 +9,7 @@ module.exports = {
       secondary: colors.violet,
       white: colors.white,
       transparent: 'transparent',
+      current: 'currentColor',
     }
   },
   variants: {},
