@@ -33,7 +33,7 @@
             @apply p-0 w-12 h-12 align-middle rounded border text-gray-600 border-gray-600;
             &:not(:disabled) { @apply border-secondary-600 text-secondary-700 bg-secondary-200/50 hover:bg-secondary-300; }
             &.actual { @apply bg-secondary-300; }
-            &.finish:not(:disabled) { @apply border-primary-600 bg-primary-300/50 hover:bg-primary-300; }
+            &.finish:not(:disabled) { @apply text-primary-700 border-primary-600 bg-primary-300/50 hover:bg-primary-300; }
             & svg { @apply p-0 stroke-current; }
         }
     }
