@@ -1,39 +1,5 @@
 import { useState } from "react";
 
-import './signotator.css';
-
-let tabComponent = {};
-
-const fixColons = /:(?=:)|^:|:$/g;
-
-export default function Signotator ({ inputRef, updateVal }) {
-    const [tab, setTab] = useState("Q");
-    const Component = tabComponent[tab];
-    const appendSN = SN => {
-        const ip = inputRef.current;
-        const start = ip.selectionStart;
-        const end = ip.selectionEnd;
-        let before = ip.value.slice(0, start);
-        let after = ip.value.slice(end);
-        if ((start == end) && (start < ip.value.length)) {
-            before = before.slice(0, before.lastIndexOf(":"));
-            let aio = after.indexOf(":");
-            after = aio<0?"":after.slice(aio);
-        }
-        const upd = before + SN + after;
-        updateVal(upd.replace(fixColons, ""));
-        setTab(Component.nextTab);
-    };
-    return <div className="Signotator" onClick={e => {
-        e.preventDefault(); e.stopPropagation(); inputRef.current.focus();
-        }} >
-        <nav>{["Q", "O", "L", "D", "R"].map(seg=> <button key={seg}
-                disabled={tab==seg} onClick={() => setTab(seg)}>
-            {seg}</button>)}</nav>
-        <Component done={appendSN} />
-    </div>;
-}
-
 const fingers = {
     I: "m 21.528411,24.731809 h -5.27179 m 5.33961,-5.96757 V 4.6388 m -12.560944,16.845735 2.971263,-2.811166 4.45726,-1.112567 5.132421,1.203438 -0.06782,5.96757 c 0.004,2.34864 -0.5366,3.74983 -1.40496,4.21688 h -9.27442 C 9.050417,27.88466 9.035287,21.484535 9.035287,21.484535 Z",
     V: "m 21.188354,24.73181 h -5.27179 M 16.596651,17.17674 15.511855,3.473968 M 21.002438,18.137395 23.86837,4.609805 M 8.823155,21.59666 l 3.149906,-3.282582 4.62359,-1.137338 4.405787,0.960655 0.185876,6.594415 c 0.004,2.34863 -0.5366,3.74983 -1.40496,4.21688 h -9.27442 C 8.710314,27.88466 8.823155,21.59666 8.823155,21.59666 Z",
@@ -65,7 +31,17 @@ const fingers = {
     LL: "m 16.467611,26.351082 c 0,0.895186 -0.725692,1.620877 -1.620878,1.620877 -0.895186,0 -1.620877,-0.725691 -1.620877,-1.620877 0,-0.895185 0.725691,-1.620877 1.620877,-1.620877 0.895186,0 1.620878,0.725692 1.620878,1.620877 z M 15.045503,20.11376 h 2.018556 m 0.793696,-1.910465 H 14.88148 l -0.03474,6.52691 m 7.154243,-3.505863 3.072193,-9.713926 M 21.534721,15.86461 21.815014,6.2427351 C 21.988187,2.14396 27.073667,3.7109008 25.592314,8.782881 M 9.8508005,27.898211 C 7.8305794,26.703087 7.9033183,19.009508 7.9033183,19.009508 l 3.8677587,-2.971307 4.535484,-1.362314 5.228158,1.188723 0.311223,7.297177 c 0.0045,2.637995 -0.602713,4.211831 -1.57806,4.736424",
 };
 
-tabComponent.Q = function ({ done }) {
+function FingerDrawing ({ name }) {
+    return <svg style={{ width: "100%", padding: 0,
+            fill: "none", strokeWidth: 1.25,
+            strokeLinecap: "round", strokeLinejoin: "round"
+        }} viewBox="0 0 32 32">
+        <path d={fingers[name]} />
+    </svg>;
+}
+
+export function Q ({ done }) {
+
     const [picam, setPicam] = useState(null);
     const [flex, setFlex] = useState("");
     const [touch, setTouch] = useState("");
@@ -73,17 +49,6 @@ tabComponent.Q = function ({ done }) {
     function reset() { setPicam(null); setFlex(""); setTouch(""); setOthers(false); }
     function finish() {
         done(`:${flex===""?picam.toUpperCase():picam}${flex!=="c"?flex:""}${touch}${others?"O":""}:`);
-    }
-
-    function FingerDrawing ({ name }) {
-        if (fingers[name]) {
-            return <svg style={{ width: "100%", padding: 0,
-                    fill: "none", strokeWidth: 1.25,
-                    strokeLinecap: "round", strokeLinejoin: "round"
-                }} viewBox="0 0 32 32">
-                <path d={fingers[name]} />
-            </svg>;
-        } else return name;
     }
 
     function SelButton ({ opts }) { // current picam, value to set, display, holistic set r+O
@@ -190,52 +155,4 @@ tabComponent.Q = function ({ done }) {
             </td></tr>
         </tbody>
     </table></div>;
-}
-
-tabComponent.Q.nextTab = "O";
-
-tabComponent.O = function ({ done }) {
-    const [palmar, setPalmar] = useState([]);
-    const [distal, setDistal] = useState([]);
-    return <div><table>
-        <tbody>
-            <tr><th>Palma</th><th>Dedos</th></tr>
-            <tr><td>
-                <Direction val={palmar} set={setPalmar} />
-            </td><td>
-                <Direction val={distal} set={setDistal} />
-            </td></tr>
-            <tr><td colSpan="2" className="text-right"><button className="finish"
-                disabled={palmar.length==0 && distal.length==0}
-                onClick={() => done(`:${palmar.join('')}${distal.join('').toLowerCase()}:`)}>✔</button>
-            </td></tr>
-        </tbody>
-    </table></div>;
-}
-
-tabComponent.O.nextTab = "Q";
-
-function Direction ({ val, set }) {
-    function Arrow({ dir, opo, path }) {
-        let cn = "Arrow";
-        let click = null;
-        if (val.includes(dir)) {
-            cn += " actual";
-            click = () => set(val.filter(d => d!=dir));
-        } else if (val.length == 2 || val.includes(opo)) {
-            cn += " disabled";
-        } else {
-            cn += " enabled";
-            click = () => set(val.concat([dir]));
-        }
-        return <path d={path} className={cn} onClick={click} />;
-    }
-    return <svg className="w-full h-full" viewBox="90 52 62 58">
-        <Arrow dir="F" opo="B" path="m 133.66599,62.189793 -16.63545,6.86199 8.18301,0.0785 -5.84265,8.538184 7.35789,0.07058 5.84265,-8.538184 8.18299,0.0785 z" />
-        <Arrow dir="H" opo="L" path="m 120.15121,52.244762 -9.71724,10.715056 h 6.70347 v 13.114959 h 6.02754 V 62.959818 h 6.70346 z" />
-        <Arrow dir="X" opo="Y" path="m 91.006791,81.042921 5.856436,7.820849 3.351733,-5.395239 h 13.11496 l 3.01377,-4.851221 h -13.11496 l 3.35173,-5.395231 z" />
-        <Arrow dir="Y" opo="X" path="m 150.49164,81.125927 -5.85643,-7.820849 -3.35174,5.395239 h -13.11496 l -3.01377,4.851221 h 13.11496 l -3.35173,5.395231 z" />
-        <Arrow dir="L" opo="H" path="m 121.34719,109.92412 9.71724,-10.715056 h -6.70347 V 86.094105 h -6.02754 v 13.114959 h -6.70346 z" />
-        <Arrow dir="B" opo="F" path="m 107.83243,99.97909 16.63545,-6.86199 -8.18301,-0.0785 5.84265,-8.538184 -7.35789,-0.07059 -5.84264,8.538184 -8.183,-0.0785 z" />
-    </svg>;
 }

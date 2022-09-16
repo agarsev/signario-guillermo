@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
 
 import { debounce } from '../common/front.js';
-import Signotator from '../signotator.js';
+import Signotator from '../signotator/main.js';
 
 const saveDB = debounce(600);
 const msgDB = debounce(3500);

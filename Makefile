@@ -22,4 +22,4 @@ dist/%/index.html: $$(wildcard src/$$*/*)
 			 --no-autoinstall --no-content-hash --no-cache \
 			 --no-optimize --target $*
 
-dist/detail/index.html: src/signotator.js src/signotator.css
+dist/detail/index.html: $(wildcard src/signotator/*)
