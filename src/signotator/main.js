@@ -3,10 +3,12 @@ import { useState } from "react";
 import './style.css';
 import { Q } from './q.js';
 import { O } from './space.js';
+import { L } from './body.js';
 
 const tabs = {
     Q: { component: Q, next: "O" },
-    O: { component: O, next: "Q" },
+    O: { component: O, next: "L" },
+    L: { component: L, next: "Q" },
     "⚙": { component: Options, next: "Q" },
 };
 
@@ -14,7 +16,7 @@ const fixColons = /:(?=:)|^:|:$/g;
 
 export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
-    const [tab, setTab] = useState("Q");
+    const [tab, setTab] = useState("L");
     const Component = tabs[tab].component;
     const appendSN = SN => {
         const ip = inputRef.current;

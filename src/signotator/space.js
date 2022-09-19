@@ -9,7 +9,9 @@ export function Direction ({ val, set, invert }) {
         }
         let cn = "Arrow";
         let click = null;
-        if (val.includes(dir)) {
+        if (val === null) {
+            cn += " disabled";
+        } else if (val.includes(dir)) {
             cn += " actual";
             click = () => set(val.filter(d => d!=dir));
         } else if (val.length == 2 || val.includes(opo)) {

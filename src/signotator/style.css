@@ -47,6 +47,16 @@
             &.actual { @apply cursor-pointer stroke-primary-600 fill-primary-200; }
             &.disabled { @apply stroke-gray-600 fill-transparent; }
         }
+        & .Locus {
+            @apply fill-transparent cursor-pointer;
+            &:hover { @apply fill-secondary-200; }
+            &.actual { @apply fill-primary-200; }
+        }
+        & .BodyOutline {
+            vector-effect: non-scaling-stroke;
+            stroke-width: 1.25;
+            @apply stroke-secondary-700;
+        }
     }
 
 }
