@@ -12,26 +12,23 @@ const tabs = {
     "⚙": { component: Options, next: "Q" },
 };
 
-const fixColons = /:(?=:)|^:|:$/g;
+const fixColons = /:(?=[:\] ])|(?<=[\[ ]):|^:|:$/g;
 
 export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
     const [tab, setTab] = useState("L");
     const Component = tabs[tab].component;
-    const appendSN = SN => {
+    const appendSN = (SN, inset) => {
         const ip = inputRef.current;
         const start = ip.selectionStart;
         const end = ip.selectionEnd;
         let before = ip.value.slice(0, start);
         let after = ip.value.slice(end);
-        if ((start == end) && (start < ip.value.length)) {
-            before = before.slice(0, before.lastIndexOf(":"));
-            let aio = after.indexOf(":");
-            after = aio<0?"":after.slice(aio);
-        }
-        const upd = before + SN + after;
-        updateVal(upd.replace(fixColons, ""));
+        const upd = (before + SN + after).replace(fixColons, "");
+        updateVal(upd);
         setTab(tabs[tab].next);
+        let pos = upd.length-(inset?1:after.length);
+        setTimeout(() => ip.setSelectionRange(pos, pos), 0);
     };
     return <div className="Signotator" onClick={e => {
         e.preventDefault(); e.stopPropagation(); inputRef.current.focus();

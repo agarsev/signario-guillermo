@@ -1,10 +1,20 @@
 import { useState } from "react";
 
-import { Direction } from "./space.js";
+import { Direction, opposite } from "./space.js";
 
 export function L ({ done, options }) {
     const [name, setName] = useState(null);
     const [dir, setDir] = useState([]);
+    const fixDir = options.perspective == "obs" ?
+        d => d :
+        d => opposite[d];
+    const finish = () => {
+        let res = ":";
+        if (name == "H2") res += "[]";
+        else if (name != null) res += name;
+        if (dir.length>0) res += dir.join('');
+        done(res+":", name=="H2");
+    };
     return <div className="grid grid-cols-[2fr,1fr,auto] grid-rows-[1fr,auto]">
         <svg className="w-full h-full col-start-1 col-end-3 row-start-1 row-end-3"
             viewBox="0 0 83 87">
@@ -16,7 +26,7 @@ export function L ({ done, options }) {
             <g filter="url(#svgblur)">
                 {area_paths.map(([thisName, thisDir, path]) => <AreaPath
                     key={thisName+thisDir}
-                    name={thisName} dir={thisDir} path={path}
+                    name={thisName} dir={fixDir(thisDir)} path={path}
                     curName={name} curDir={dir}
                     setName={setName} setDir={setDir}
                 />)}
@@ -24,11 +34,11 @@ export function L ({ done, options }) {
             <BodyOutline />
         </svg>
         <div className="col-start-2 col-end-4 row-start-1">
-            <Direction val={name!==null?dir:null} set={setDir} invert={true} />
+            <Direction val={dir} set={setDir} options={options} />
         </div>
         <button className="finish col-start-3 row-start-2 mr-2 mb-2"
-            disabled={name === null}
-            onClick={() => done(`:${name}${dir.length>0?dir.join(''):''}:`)}>✔</button>
+            disabled={name==null && dir.length==0}
+            onClick={finish}>✔</button>
     </div>;
 }
 
