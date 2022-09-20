@@ -4,11 +4,13 @@ import './style.css';
 import { Q } from './q.js';
 import { O } from './space.js';
 import { L } from './body.js';
+import { Dynam } from './dynam.js';
 
 const tabs = {
     Q: { component: Q, next: "O" },
     O: { component: O, next: "L" },
-    L: { component: L, next: "Q" },
+    L: { component: L, next: "D" },
+    D: { component: Dynam, next: "Q" },
     "⚙": { component: Options, next: "Q" },
 };
 
@@ -16,9 +18,9 @@ const fixColons = /:(?=[:\] ])|(?<=[\[ ]):|^:|:$/g;
 
 export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
-    const [tab, setTab] = useState("L");
+    const [tab, setTab] = useState("D");
     const Component = tabs[tab].component;
-    const appendSN = (SN, inset) => {
+    const appendSN = (SN, isH2) => {
         const ip = inputRef.current;
         const start = ip.selectionStart;
         const end = ip.selectionEnd;
@@ -26,8 +28,10 @@ export default function Signotator ({ inputRef, updateVal }) {
         let after = ip.value.slice(end);
         const upd = (before + SN + after).replace(fixColons, "");
         updateVal(upd);
-        setTab(tabs[tab].next);
-        let pos = upd.length-(inset?1:after.length);
+        setTab(isH2?"Q":tabs[tab].next);
+        let pos = upd.length-after.length;
+        if (isH2) pos -= 1;
+        ip.setSelectionRange(pos, pos);
         setTimeout(() => ip.setSelectionRange(pos, pos), 0);
     };
     return <div className="Signotator" onClick={e => {
