@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html { height: 100%; }
+    body { @apply bg-gray-200 h-full; }
+}
+
+@layer components {
+    table td { @apply px-2 align-baseline border border-gray-200; }
+    .tabBar { @apply flex space-x-1 px-3; }
+    .tabBar > button {
+        @apply py-1 px-3 bg-gray-200;
+        @apply border-x border-t border-primary-600/50 rounded-t;
+        &:disabled { @apply border-primary-600 bg-primary-200; }
+        /* &:hover { @apply border-primary-600 bg-primary-200; } */
+    }
+}
+
+@layer utilities {
+    .pill {
+        @apply p-1 rounded border text-gray-700 border-gray-600;
+        &:not(:disabled) { @apply border-secondary-600 text-secondary-900 bg-secondary-200 hover:bg-secondary-300; }
+    }
+}

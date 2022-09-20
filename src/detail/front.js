@@ -7,9 +7,10 @@ import Signotator from '../signotator/main.js';
 const saveDB = debounce(600);
 const msgDB = debounce(3500);
 const saveMSG = {
-    0: "",
-    1: "Cambios sin guardar",
-    2: "Todo guardado 👍"
+    0: "", // Pristine
+    1: "", // Careful! NBSP (\u00A0)
+    2: "Cambios sin guardar",
+    3: "Todo guardado 👍"
 };
 let original_info = null;
 
@@ -29,47 +30,60 @@ function DetailFront () {
     }, [number]);
     const updInfo = upd => {
         setInfo({...info, ...upd});
-        setSS(1);
+        setSS(2);
         msgDB.clear();
         saveDB.run(() => {
             setInfo(back.update(number, upd));
-            setSS(2);
-            msgDB.run(() => setSS(0));
+            setSS(3);
+            msgDB.run(() => setSS(1));
         });
     };
 
     return <>
-        <header>
-            Vídeo: {number}
+        <header className="p-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+            {info!==null ?
+                <Info update={updInfo} saveStatus={saveStatus}
+                    reset={() => updInfo(original_info)} {...info} /> :
+                <div></div>}
             <VideoPlay />
         </header>
-        <button onClick={() => updInfo(original_info)}>Revertir todos los cambios</button>
-        <span className="ml-2 italic text-sm text-gray-800">{saveMSG[saveStatus]}</span>
-        {info!==null?<Info update={updInfo} {...info} />:null}
+        <nav className="tabBar mt-2">
+            <button disabled>Signotación</button>
+            <button>Información Léxica</button>
+        </nav>
+        <div className="bg-gray-300 border-t border-primary-600 flex-1 p-2">
+            <ParamTab update={updInfo} {...info} />
+        </div>
     </>;
 }
 
 function VideoPlay () {
     const video_src = `${video_dir}/${number.substring(0,3)}/${number.substring(3)}.mp4`;
-    return <video muted autoPlay>
+    return <video className="cursor-pointer" muted autoPlay controls >
         <source src={video_src} />
     </video>;
 }
 
-function Info ({ gloss, notation, update, modified_by, modified_at }) {
+function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus }) {
+    return <ul className="space-y-1">
+        <li>Número: {number}</li>
+        <li className="text-lg border-t border-primary-600 pt-1">Glosa:</li>
+        <li className="text-lg border-b border-primary-600 pb-2">
+            <input className="p-1 w-full" type="text" value={gloss}
+                onChange={e => update({gloss: e.target.value})} />
+        </li>
+        <li>Entrada por <i>{modified_by}</i> el <i>{modified_at}</i></li>
+        <li><button className="pill" disabled={saveStatus==0} onClick={reset}>Revertir todos los cambios</button></li>
+        <li className="ml-2 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</li>
+    </ul>;
+}
+
+function ParamTab ({ notation, update }) {
     const notationInput = useRef();
     return <>
-        <table><tbody>
-        <tr><td colSpan="2">Entrada por {modified_by} el {modified_at}</td></tr>
-        <tr><th>Glosa:</th>
-            <td><input type="text" value={gloss}
-                onChange={e => update({gloss: e.target.value})} /></td>
-        </tr>
-        <tr><th>Signotación:</th>
-            <td><input type="text" value={notation} ref={notationInput}
-                onChange={e => update({notation: e.target.value})} /></td>
-        </tr>
-        </tbody></table>
+        <input className="text-lg p-1 mt-1 mb-3 w-full" type="text"
+            value={notation || ""} ref={notationInput}
+            onChange={e => update({notation: e.target.value})} />
         <Signotator inputRef={notationInput} updateVal={notation => update({notation})} />
-    </>
+    </>;
 }
