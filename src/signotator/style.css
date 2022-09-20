@@ -6,12 +6,12 @@
 
     .Signotator {
         width: 360px;
-        @apply inline-block border border-primary-600 m-4 p-1 rounded;
+        @apply inline-block border border-primary-600 m-4 p-1 rounded bg-primary-600/20;
         & > * { @apply w-full; }
         & > nav {
             @apply flex space-x-1;
             & button {
-                @apply p-1 flex-1;
+                @apply p-1 flex-1 bg-gray-100;
                 @apply border-x border-t border-primary-600/50 rounded-t;
                 &:disabled { @apply border-primary-600 bg-primary-200; }
                 &:hover { @apply border-primary-600 bg-primary-200; }
@@ -20,7 +20,7 @@
     }
 
     .Signotator > div {
-        @apply border border-primary-600;
+        @apply border border-primary-600 bg-gray-100;
         & table { @apply w-full text-center; }
         & td {
             @apply p-1 border-0 border-secondary-600;

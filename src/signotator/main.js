@@ -4,23 +4,20 @@ import './style.css';
 import { Q } from './q.js';
 import { O } from './space.js';
 import { L } from './body.js';
-import { Dynam } from './dynam.js';
+import { Dynam, Syllab } from './dynam.js';
 
-const tabs = {
-    Q: { component: Q, next: "O" },
-    O: { component: O, next: "L" },
-    L: { component: L, next: "D" },
-    D: { component: Dynam, next: "Q" },
-    "⚙": { component: Options, next: "Q" },
+const tabs = { Q, O, L,
+    D: Dynam, S: Syllab,
+    "⚙": Options,
 };
 
 const fixColons = /:(?=[:\] ])|(?<=[\[ ]):|^:|:$/g;
 
 export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
-    const [tab, setTab] = useState("D");
-    const Component = tabs[tab].component;
-    const appendSN = (SN, isH2) => {
+    const [tab, setTab] = useState("Q");
+    const Component = tabs[tab];
+    const appendSN = (SN, nextTab, inset) => {
         const ip = inputRef.current;
         const start = ip.selectionStart;
         const end = ip.selectionEnd;
@@ -28,9 +25,9 @@ export default function Signotator ({ inputRef, updateVal }) {
         let after = ip.value.slice(end);
         const upd = (before + SN + after).replace(fixColons, "");
         updateVal(upd);
-        setTab(isH2?"Q":tabs[tab].next);
+        setTab(nextTab);
         let pos = upd.length-after.length;
-        if (isH2) pos -= 1;
+        if (inset) pos -= 1;
         ip.setSelectionRange(pos, pos);
         setTimeout(() => ip.setSelectionRange(pos, pos), 0);
     };
@@ -54,11 +51,13 @@ function Options ({ options, setOptions }) {
                 checked={options[pref]==val} /> {text}</label>;
     }
 
-    return <div>
-        Perspectiva:
-        <Radio pref="perspective" text="Observador" val="obs" />
-        <Radio pref="perspective" text="Signante" val="sign" />
-    </div>;
+    return <div><table><tbody>
+        <tr>
+            <th>Perspectiva:</th>
+            <td><Radio pref="perspective" text="Observador" val="obs" /></td>
+            <td><Radio pref="perspective" text="Signante" val="sign" /></td>
+        </tr>
+    </tbody></table></div>;
 }
 
 const DEF_OPTIONS = {
