@@ -4,7 +4,7 @@ module.exports = {
   content: ["./src/*.js", "./src/*/*.{html,js}"],
   theme: {
     colors: {
-      gray: colors.stone,
+      gray: colors.zinc,
       primary: colors.amber,
       secondary: colors.violet,
       white: colors.white,

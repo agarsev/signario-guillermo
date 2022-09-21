@@ -60,29 +60,27 @@ app.whenReady().then(() => {
 });
 
 
-let detail_window = null;
-function loadDetail (number) {
-  if (number !== undefined) {
-    prefs.set('number', number);
-  }
-  detail_window.loadFile('dist/detail/index.html', {
+let detail_windows = [];
+function loadDetail ({ win, number }) {
+  win.loadFile('dist/detail/index.html', {
     query: {
-      number: prefs['number'],
+      number,
       video_dir: prefs['video_dir'],
     }
   });
 }
-ipcMain.handle('open_detail', (_, number) => {
-  if (!detail_window) {
-    detail_window = new BrowserWindow({
+ipcMain.handle('open_detail', (_, { number, reuse }) => {
+  if (detail_windows.length == 0 || !reuse) {
+    const win = new BrowserWindow({
       webPreferences: {
         spellcheck: false,
         preload: path.join(__dirname, 'detail/back.js'),
       },
     });
-    detail_window.on('closed', () => { detail_window = null; });
+    win.on('closed', () => { detail_windows = detail_windows.filter(w => w!==nuwin); });
+    detail_windows.push({win,number});
   }
-  loadDetail(number);
+  loadDetail(detail_windows[detail_windows.length-1]);
 });
 
 async function setVideoDir (_, win) {
@@ -92,6 +90,6 @@ async function setVideoDir (_, win) {
   });
   if (!res.canceled) {
     prefs.set('video_dir', res.filePaths[0]);
-    if (detail_window) loadDetail();
+    detail_windows.forEach(loadDetail);
   }
 }

@@ -53,7 +53,8 @@ function App () {
                     <td className="text-sm text-gray-600">{r.number}</td>
                     <td>{r.gloss}</td>
                     <td>{r.notation}</td>
-                    <td><button onClick={() => back.openDetail(r.number)}>!</button></td>
+                    <td><button onClick={() => back.openDetail(r.number, true)}>!</button></td>
+                    <td><button onClick={() => back.openDetail(r.number, false)}>+</button></td>
                 </tr>)}
             </tbody>
         </table>

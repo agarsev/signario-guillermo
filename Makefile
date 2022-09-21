@@ -15,7 +15,7 @@ clean:
 
 .SECONDEXPANSION:
 
-dist/%/index.html: $(wildcard src/common/*) $$(wildcard src/$$*/*)
+dist/%/index.html: tailwind.config.js $(wildcard src/common/*) $$(wildcard src/$$*/*)
 	echo $^
 	@mkdir -p $(@D)
 	NODE_ENV=development parcel build \

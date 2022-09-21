@@ -12,7 +12,7 @@ let numPages = numberOfPages();
 
 contextBridge.exposeInMainWorld('back', {
 
-    openDetail: number => ipcRenderer.invoke('open_detail', number),
+    openDetail: (number, reuse) => ipcRenderer.invoke('open_detail', { number, reuse }),
 
     select: function (page) {
         const order = 'number';
