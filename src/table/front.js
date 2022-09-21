@@ -2,16 +2,25 @@ import { createRoot } from "react-dom/client";
 import { useState, useEffect } from "react";
 
 function useTable () {
+
     const [ isLoading, setIsLoading ] = useState(true);
     const [ rows, setRows ] = useState([]);
     const [ page, setPage ] = useState(0);
     const [ numPages, setNumPages ] = useState(0);
-    useEffect(() => {
+
+    const load = () => {
         const { rows, numPages } = back.select(page);
         setRows(rows);
         setNumPages(numPages);
         setIsLoading(false);
+    }
+
+    useEffect(() => {
+        load();
+        const listener = window.addEventListener("focus", load);
+        return () => window.removeEventListener("focus", load);
     }, [page]);
+
     return { isLoading, rows, page, numPages,
         next: page<(numPages-1)?() => setPage(page+1):false,
         prev: page>0?() => setPage(page-1):false,
