@@ -23,17 +23,18 @@ createRoot(document.getElementById("appRoot")).render(<DetailFront />);
 function DetailFront () {
     const [ info, setInfo ] = useState(null);
     const [ saveStatus, setSS ] = useState(0);
-    useEffect(() => {
-        const got_info = back.select(number);
+    useEffect(async () => {
+        const got_info = await back.select(number);
         setInfo(got_info);
         original_info = got_info;
+        return;
     }, [number]);
     const updInfo = upd => {
         setInfo({...info, ...upd});
         setSS(2);
         msgDB.clear();
-        saveDB.run(() => {
-            setInfo(back.update(number, upd));
+        saveDB.run(async () => {
+            setInfo(await back.update(number, upd));
             setSS(3);
             msgDB.run(() => setSS(1));
         });

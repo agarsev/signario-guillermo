@@ -20,6 +20,14 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
   }, {
     type: 'separator'
   }, {
+    label: 'Exportar BD',
+    click: exportDB
+  }, {
+    label: 'Importar BD',
+    click: importDB
+  }, {
+    type: 'separator'
+  }, {
     role: 'quit'
   }]
 },{
@@ -92,4 +100,37 @@ async function setVideoDir (_, win) {
     prefs.set('video_dir', res.filePaths[0]);
     detail_windows.forEach(loadDetail);
   }
+}
+
+const db_path = path.join(app.getPath('userData'), 'signario.db');
+ipcMain.handle('get_db_path', () => db_path);
+
+async function exportDB (_, win) {
+  const res = await dialog.showSaveDialog(win, {
+    title: "Exportar base de datos",
+  });
+  if (res.canceled) return;
+  fs.copyFile(db_path, res.filePath, () => {
+    dialog.showMessageBox(win, {
+      title: "Éxito",
+      type: "info",
+      message: "Base de datos exportada con éxito.",
+    });
+  });
+}
+async function importDB (_, win) {
+  await dialog.showMessageBox(win, {
+    title: "Atención",
+    type: "warning",
+    message: "Al importar una base de datos, se perderán los cambios sin sincronizar.",
+  });
+  const res = await dialog.showOpenDialog(win, {
+    title: "Importar base de datos",
+    properties: ['openFile']
+  });
+  if (res.canceled) return;
+  detail_windows.forEach(({win}) => win.close());
+  fs.copyFile(res.filePaths[0], db_path, () => {
+    main_window.loadFile('dist/table/index.html');
+  });
 }

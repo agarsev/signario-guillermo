@@ -6,13 +6,17 @@ function useTable () {
     const [ isLoading, setIsLoading ] = useState(true);
     const [ rows, setRows ] = useState([]);
     const [ page, setPage ] = useState(0);
-    const [ numPages, setNumPages ] = useState(0);
+    const [ numPages, setNumPages ] = useState(1);
 
-    const load = () => {
-        const { rows, numPages } = back.select(page);
-        setRows(rows);
-        setNumPages(numPages);
-        setIsLoading(false);
+    const load = async () => {
+        try {
+            const { rows, numPages } = await back.select(page);
+            setRows(rows);
+            setNumPages(numPages);
+            setIsLoading(false);
+        } catch {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -40,7 +44,7 @@ function App () {
                 else if (dist>MAX_TABS) dist=MAX_TABS;
                 dist = dist/(MAX_TABS*1.1);
                 dist = 100 * (dist*dist);
-                return <span key={i} className={`${dist<3?"min-w-[2em] basis-auto":"min-w-[3px] basis-0"} max-w-12 shrink ${dist<MAX_TABS?"px-[2px]":""}`}
+                return <span key={i} className={`${dist<3?"min-w-[2em] basis-auto":"min-w-[3px] basis-0"} max-w-[4em] shrink ${dist<MAX_TABS?"px-[2px]":""}`}
                     style={{flexGrow: 100-dist, transition:"flex-grow 200ms"}}>
                     <button className="w-full h-8 break-all overflow-hidden" disabled={cur}
                         onClick={cur?()=>{}:() => table.goto(i)}>{` ${i+1} `}</button>
@@ -64,17 +68,20 @@ function SignTable ({ table }) {
             </tr>
         </thead>
         <tbody>
-            {table.isLoading?<tr>
-                <td colSpan="4">Cargando...</td>
-            </tr>:table.rows.map(r => <tr className="group" key={r.number}>
-                <td className="text-sm text-secondary-800/80 group-hover:text-primary-700">{r.number}</td>
-                <td>{r.gloss}</td>
-                <td>{r.notation}</td>
-                <td>
-                    <button onClick={() => back.openDetail(r.number, true)}>!</button>
-                    <button onClick={() => back.openDetail(r.number, false)}>+</button>
-                </td>
-            </tr>)}
+            {table.rows.length>0?
+                table.rows.map(r => <tr className="group" key={r.number}>
+                    <td className="text-sm text-secondary-800/80 group-hover:text-primary-700">{r.number}</td>
+                    <td>{r.gloss}</td>
+                    <td>{r.notation}</td>
+                    <td>
+                        <button onClick={() => back.openDetail(r.number, true)}>!</button>
+                        <button onClick={() => back.openDetail(r.number, false)}>+</button>
+                    </td>
+                </tr>):
+                <tr>
+                    <td colSpan="4" className="text-secondary-800 italic px-4 py-1">{table.isLoading?"Cargando...":"No hay resultados"}</td>
+                </tr>
+            }
         </tbody>
     </table>;
 }
