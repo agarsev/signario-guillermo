@@ -21,44 +21,62 @@ function useTable () {
         return () => window.removeEventListener("focus", load);
     }, [page]);
 
-    return { isLoading, rows, page, numPages,
-        next: page<(numPages-1)?() => setPage(page+1):false,
-        prev: page>0?() => setPage(page-1):false,
-    };
+    return { isLoading, rows, page, numPages, goto: setPage };
 }
 
+const MAX_TABS = 15;
 function App () {
     const table = useTable();
     return <>
-        <h1 className="text-primary-800">Guillermo</h1>
+        <header>
+            <h1 className="text-primary-800">Guillermo</h1>
+        </header>
         <nav>
-            Página:
-            <button onClick={table.prev?table.prev:undefined} disabled={!table.prev}>-</button>
-            {table.page+1}/{table.numPages}
-            <button onClick={table.next?table.next:undefined} disabled={!table.next}>+</button>
+            <span className="h-8 py-1 mr-1">Página:</span>
+            {Array(table.numPages).fill().map((_, i) => {
+                const cur = i==table.page;
+                let dist = Math.abs(i-table.page);
+                if (i==0 || i==table.numPages-1) dist=0;
+                else if (dist>MAX_TABS) dist=MAX_TABS;
+                dist = dist/(MAX_TABS*1.1);
+                dist = 100 * (dist*dist);
+                return <span key={i} className={`${dist<3?"min-w-[2em] basis-auto":"min-w-[3px] basis-0"} max-w-12 shrink ${dist<MAX_TABS?"px-[2px]":""}`}
+                    style={{flexGrow: 100-dist, transition:"flex-grow 200ms"}}>
+                    <button className="w-full h-8 break-all overflow-hidden" disabled={cur}
+                        onClick={cur?()=>{}:() => table.goto(i)}>{` ${i+1} `}</button>
+                </span>;
+            })}
         </nav>
-        <table className="border-primary-200">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Glosa</th>
-                    <th>Signotación</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {table.isLoading?<tr>
-                    <td colSpan="4">Cargando...</td>
-                </tr>:table.rows.map(r => <tr key={r.number}>
-                    <td className="text-sm text-gray-600">{r.number}</td>
-                    <td>{r.gloss}</td>
-                    <td>{r.notation}</td>
-                    <td><button onClick={() => back.openDetail(r.number, true)}>!</button></td>
-                    <td><button onClick={() => back.openDetail(r.number, false)}>+</button></td>
-                </tr>)}
-            </tbody>
-        </table>
+        <div className="overflow-y-auto">
+            <SignTable table={table} />
+        </div>
     </>;
+}
+
+function SignTable ({ table }) {
+    return <table className="SignTable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Glosa</th>
+                <th>Signotación</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {table.isLoading?<tr>
+                <td colSpan="4">Cargando...</td>
+            </tr>:table.rows.map(r => <tr className="group" key={r.number}>
+                <td className="text-sm text-secondary-800/80 group-hover:text-primary-700">{r.number}</td>
+                <td>{r.gloss}</td>
+                <td>{r.notation}</td>
+                <td>
+                    <button onClick={() => back.openDetail(r.number, true)}>!</button>
+                    <button onClick={() => back.openDetail(r.number, false)}>+</button>
+                </td>
+            </tr>)}
+        </tbody>
+    </table>;
 }
 
 createRoot(document.getElementById("appRoot")).render(<App />);

@@ -4,17 +4,37 @@
 
 @layer base {
     html { height: 100%; }
-    body { @apply bg-gray-200 h-full; }
+    body { @apply bg-gray-200 h-full overflow-y-auto; }
 }
 
 @layer components {
-    table td { @apply px-2 align-baseline border border-gray-200; }
-    .tabBar { @apply flex space-x-1 px-3; }
-    .tabBar > button {
-        @apply py-1 px-3 bg-gray-200;
-        @apply border-x border-t border-primary-600/50 rounded-t;
-        &:disabled { @apply border-primary-600 bg-primary-200; }
-        /* &:hover { @apply border-primary-600 bg-primary-200; } */
+    #appRoot {
+        @apply h-full flex flex-col;
+        & > nav {
+            @apply w-full flex-none overflow-hidden flex px-2;
+            & button {
+                @apply py-1 text-center bg-gray-200;
+                @apply border-x border-t border-primary-600/50 rounded-t;
+                &:disabled { @apply border-primary-600 bg-primary-200; }
+                /* &:hover { @apply border-primary-600 bg-primary-200; } */
+            }
+        }
+        & > nav + div {
+            @apply bg-gray-300 border-t border-primary-600 flex-1;
+        }
+    }
+    .SignTable {
+        @apply w-full ;
+        & th { @apply sticky top-0 pt-4 bg-gray-300; }
+        & tbody {
+            & tr:nth-child(odd) { @apply bg-secondary-500/30; }
+            & tr:nth-child(even) { @apply bg-secondary-500/10; }
+            & tr:hover td { @apply bg-primary-200; }
+        }
+        & td {
+            @apply px-2 align-baseline border-secondary-700;
+            & + td { @apply border-l; }
+        }
     }
 }
 

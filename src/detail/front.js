@@ -47,11 +47,11 @@ function DetailFront () {
                 <div></div>}
             <VideoPlay />
         </header>
-        <nav className="tabBar mt-2">
-            <button disabled>Signotación</button>
-            <button>Información Léxica</button>
+        <nav className="space-x-1">
+            <button className="p-2" disabled>Signotación</button>
+            <button className="p-2">Información Léxica</button>
         </nav>
-        <div className="bg-gray-300 border-t border-primary-600 flex-1 p-2">
+        <div className="p-2">
             <ParamTab update={updInfo} {...info} />
         </div>
     </>;

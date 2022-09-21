@@ -77,7 +77,7 @@ ipcMain.handle('open_detail', (_, { number, reuse }) => {
         preload: path.join(__dirname, 'detail/back.js'),
       },
     });
-    win.on('closed', () => { detail_windows = detail_windows.filter(w => w!==nuwin); });
+    win.on('closed', () => { detail_windows = detail_windows.filter(w => w.win!==win); });
     detail_windows.push({win,number});
   }
   loadDetail(detail_windows[detail_windows.length-1]);
