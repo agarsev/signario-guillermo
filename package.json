@@ -44,6 +44,9 @@
       "src/main.js",
       "src/*/back.js"
     ],
+    "win": {
+      "target": "portable"
+    },
     "linux": {
       "target": "AppImage"
     }
