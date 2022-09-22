@@ -7,6 +7,7 @@ const user_name = urlParams.get('user_name') || 'anon';
 function useTable () {
 
     const [ isLoading, setIsLoading ] = useState(true);
+    const [ query, setQuery ] = useState(null);
     const [ page, setPage ] = useState(0);
     const [ data, setData ] = useState({
         rows: [],
@@ -15,20 +16,22 @@ function useTable () {
         finished: 0
     });
 
-    const load = async () => {
-        try {
-            setData(await back.select(page));
-        } catch {}
-        setIsLoading(false);
-    }
-
     useEffect(() => {
+        const load = async () => {
+            try {
+                setData(await back.select(page, query));
+            } catch (e) { console.error(e); }
+            setIsLoading(false);
+        }
         load();
         const listener = window.addEventListener("focus", load);
         return () => window.removeEventListener("focus", load);
-    }, [page]);
+    }, [page, query]);
 
-    return { ...data, page, goto: setPage };
+    return { ...data, page,
+        goto: setPage,
+        search: setQuery,
+    };
 }
 
 const MAX_TABS = 15;
@@ -104,6 +107,11 @@ function Header ({ table }) {
         setEditingName(false);
         e.preventDefault();
     };
+    const search = e => {
+        const query = e.target.querySelector('input[type="text"]').value.trim();
+        table.search(query);
+        e.preventDefault();
+    };
     return <header className="grid grid-cols-[auto,auto,1fr] py-3 px-2 gap-1">
         <h1 className="text-primary-800 text-xl font-bold row-start-1 col-start-1 col-end-3">Signario - Guillermo</h1>
         <div className="col-start-3 row-start-1 row-end-4"></div>
@@ -116,12 +124,12 @@ function Header ({ table }) {
             </button></span>
         }
         <span className="mr-1">Filtro:</span>
-        <span><input type="text" /></span>
+        <form onSubmit={search}><input type="text" /></form>
     </header>;
 }
 
 function ProgressReport ({ title, current, total }) {
-    const angle = current*2*Math.PI/total;
+    const angle = total>0?current*2*Math.PI/total:0;
     return <>
         <div className="row-start-1 row-end-4 flex flex-col items-center justify-center">
             <span>{title}:</span>
@@ -129,11 +137,11 @@ function ProgressReport ({ title, current, total }) {
             <span className="px-1 border-t border-gray-900">{total}</span>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="h-full row-start-1 row-end-4 mr-4">
-            <circle cx="10" cy="10" r="7" className="stroke-gray-400" stroke-width="5" fill="none" />
+            <circle cx="10" cy="10" r="7" className="stroke-gray-400" strokeWidth="5" fill="none" />
             {total==0||current<total?
                 <path d={`M 10,3 A 7 7 0 ${angle>Math.PI?1:0} 1 ${10+7*Math.sin(angle)} ${10-7*Math.cos(angle)}`}
-                    className="stroke-secondary-200" stroke-width="3" fill="none" />:
-                <circle cx="10" cy="10" r="7" className="stroke-primary-300" stroke-width="3" fill="none" />
+                    className="stroke-secondary-200" strokeWidth="3" fill="none" />:
+                <circle cx="10" cy="10" r="7" className="stroke-primary-300" strokeWidth="3" fill="none" />
             }
         </svg>
     </>;

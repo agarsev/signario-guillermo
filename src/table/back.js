@@ -18,12 +18,14 @@ contextBridge.exposeInMainWorld('back', {
 
     openDetail: (number, reuse) => ipcRenderer.invoke('open_detail', { number, reuse }),
 
-    select: async function (page) {
+    select: async function (page, search) {
         await init;
         const order = 'number';
         const asc = true;
         const rows = db.prepare(`SELECT *
-            FROM signs ORDER BY ${order} ${asc?'ASC':'DESC'}
+            FROM signs
+            ${search?`WHERE (notation GLOB '*${search}*') OR (gloss LIKE '%${search}%')`:''}
+            ORDER BY ${order} ${asc?'ASC':'DESC'}
             LIMIT ${PAGE_SIZE} OFFSET ${page*PAGE_SIZE}
         ;`).all();
         const finished = parseInt(getFinished.get().count)
