@@ -9,6 +9,7 @@ const init = (async function () {
     sqlUpdate = db.prepare(`UPDATE signs SET
         gloss = coalesce(:gloss, gloss),
         notation = coalesce(:notation, notation),
+        modified_by = :modified_by,
         modified_at = coalesce(:modified_at, CURRENT_TIMESTAMP)
         WHERE number = ? RETURNING *`);
 })();
@@ -20,9 +21,9 @@ contextBridge.exposeInMainWorld('back', {
         return sqlSelect.get(number);
     },
 
-    update: async (number, {gloss,notation,modified_at}) => {
+    update: async (number, {gloss,notation,modified_at,modified_by}) => {
         await init;
-        return sqlUpdate.get(number, {gloss,notation,modified_at});
+        return sqlUpdate.get(number, {gloss,notation,modified_at,modified_by});
     }
 
 });

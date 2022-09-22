@@ -63,16 +63,23 @@ app.whenReady().then(() => {
       preload: path.join(__dirname, 'table/back.js'),
     },
   });
-  main_window.loadFile('dist/table/index.html');
   main_window.on('closed', () => app.quit());
+  reload_main();
 });
-
+function reload_main () {
+  main_window.loadFile('dist/table/index.html', {
+    query: {
+      user_name: prefs['user_name']
+    }
+  });
+}
 
 let detail_windows = [];
 function loadDetail ({ win, number }) {
   win.loadFile('dist/detail/index.html', {
     query: {
       number,
+      user_name: prefs['user_name'],
       video_dir: prefs['video_dir'],
     }
   });
@@ -130,7 +137,11 @@ async function importDB (_, win) {
   });
   if (res.canceled) return;
   detail_windows.forEach(({win}) => win.close());
-  fs.copyFile(res.filePaths[0], db_path, () => {
-    main_window.loadFile('dist/table/index.html');
-  });
+  fs.copyFile(res.filePaths[0], db_path, reload_main);
 }
+
+ipcMain.handle('set_user_name', (_, name) => {
+    prefs.set('user_name', name);
+    detail_windows.forEach(loadDetail);
+    reload_main();
+});

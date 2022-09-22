@@ -26,6 +26,8 @@ contextBridge.exposeInMainWorld('back', {
             LIMIT ${PAGE_SIZE} OFFSET ${page*PAGE_SIZE}
         ;`).all();
         return { rows, numPages };
-    }
+    },
+
+    setUserName: name => ipcRenderer.invoke('set_user_name', name)
 
 });

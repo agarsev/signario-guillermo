@@ -17,19 +17,22 @@ let original_info = null;
 const urlParams = (new URL(document.location)).searchParams;
 const number = urlParams.get('number');
 const video_dir = urlParams.get('video_dir');
+const user_name = urlParams.get('user_name') || 'anon';
 
 createRoot(document.getElementById("appRoot")).render(<DetailFront />);
 
 function DetailFront () {
     const [ info, setInfo ] = useState(null);
     const [ saveStatus, setSS ] = useState(0);
-    useEffect(async () => {
-        const got_info = await back.select(number);
-        setInfo(got_info);
-        original_info = got_info;
-        return;
-    }, [number]);
-    const updInfo = upd => {
+    useEffect(() => {
+        (async () => {
+            const got_info = await back.select(number);
+            setInfo(got_info);
+            original_info = got_info;
+        })();
+    }, []);
+    const updInfo = (upd, keep_name) => {
+        if (!keep_name) upd.modified_by = user_name;
         setInfo({...info, ...upd});
         setSS(2);
         msgDB.clear();
@@ -44,7 +47,7 @@ function DetailFront () {
         <header className="p-2 grid grid-cols-1 md:grid-cols-2 gap-2">
             {info!==null ?
                 <Info update={updInfo} saveStatus={saveStatus}
-                    reset={() => updInfo(original_info)} {...info} /> :
+                    reset={() => updInfo(original_info, true)} {...info} /> :
                 <div></div>}
             <VideoPlay />
         </header>
