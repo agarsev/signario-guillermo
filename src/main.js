@@ -93,9 +93,11 @@ ipcMain.handle('open_detail', (_, { number, reuse }) => {
       },
     });
     win.on('closed', () => { detail_windows = detail_windows.filter(w => w.win!==win); });
-    detail_windows.push({win,number});
+    detail_windows.push({win});
   }
-  loadDetail(detail_windows[detail_windows.length-1]);
+  const w = detail_windows[detail_windows.length-1];
+  w.number = number;
+  loadDetail(w);
 });
 
 async function setVideoDir (_, win) {
