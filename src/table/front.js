@@ -7,19 +7,19 @@ const user_name = urlParams.get('user_name') || 'anon';
 function useTable () {
 
     const [ isLoading, setIsLoading ] = useState(true);
-    const [ rows, setRows ] = useState([]);
     const [ page, setPage ] = useState(0);
-    const [ numPages, setNumPages ] = useState(1);
+    const [ data, setData ] = useState({
+        rows: [],
+        numPages: 1,
+        totalCount: 0,
+        finished: 0
+    });
 
     const load = async () => {
         try {
-            const { rows, numPages } = await back.select(page);
-            setRows(rows);
-            setNumPages(numPages);
-            setIsLoading(false);
-        } catch {
-            setIsLoading(false);
-        }
+            setData(await back.select(page));
+        } catch {}
+        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -28,14 +28,14 @@ function useTable () {
         return () => window.removeEventListener("focus", load);
     }, [page]);
 
-    return { isLoading, rows, page, numPages, goto: setPage };
+    return { ...data, page, goto: setPage };
 }
 
 const MAX_TABS = 15;
 function App () {
     const table = useTable();
     return <>
-        <Header />
+        <Header table={table} />
         <nav>
             <span className="h-8 py-1 mr-1">Página:</span>
             {Array(table.numPages).fill().map((_, i) => {
@@ -87,7 +87,7 @@ function SignTable ({ table }) {
     </table>;
 }
 
-function Header ({}) {
+function Header ({ table }) {
     const [isEditingName, setEditingName] = useState(false);
     const startEditName = e => {
         setEditingName(true);
@@ -104,22 +104,39 @@ function Header ({}) {
         setEditingName(false);
         e.preventDefault();
     };
-    return <header className="grid grid-cols-[auto,auto,1fr,auto] p-1 gap-1">
-        <h1 className="text-primary-800 text-xl font-bold col-start-1 col-end-3">Signario - Guillermo</h1>
-        <div className="col-start-3 row-start-1 row-end-3"></div>
-        <div className="col-start-4 row-start-1 row-end-3">
-            Progreso
-        </div>
-        <span>Usuario:</span>
+    return <header className="grid grid-cols-[auto,auto,1fr] py-3 px-2 gap-1">
+        <h1 className="text-primary-800 text-xl font-bold row-start-1 col-start-1 col-end-3">Signario - Guillermo</h1>
+        <div className="col-start-3 row-start-1 row-end-4"></div>
+        <ProgressReport title="Signotación" current={table.finished} total={table.totalCount} />
+        <span className="mr-1">Usuario:</span>
         {isEditingName ?
             <form onSubmit={changeName} onClick={e => e.stopPropagation()}><input autoFocus type="text" /></form>:
-            <span>{user_name} <button className="align-middle hover:text-primary-700"
+            <span className="ml-1">{user_name} <button className="align-middle hover:text-primary-700"
                 onClick={startEditName}><EditButton />
             </button></span>
         }
-        <span>Filtro:</span>
+        <span className="mr-1">Filtro:</span>
         <span><input type="text" /></span>
     </header>;
+}
+
+function ProgressReport ({ title, current, total }) {
+    const angle = current*2*Math.PI/total;
+    return <>
+        <div className="row-start-1 row-end-4 flex flex-col items-center justify-center">
+            <span>{title}:</span>
+            <span>{current}</span>
+            <span className="px-1 border-t border-gray-900">{total}</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="h-full row-start-1 row-end-4 mr-4">
+            <circle cx="10" cy="10" r="7" className="stroke-gray-400" stroke-width="5" fill="none" />
+            {total==0||current<total?
+                <path d={`M 10,3 A 7 7 0 ${angle>Math.PI?1:0} 1 ${10+7*Math.sin(angle)} ${10-7*Math.cos(angle)}`}
+                    className="stroke-secondary-200" stroke-width="3" fill="none" />:
+                <circle cx="10" cy="10" r="7" className="stroke-primary-300" stroke-width="3" fill="none" />
+            }
+        </svg>
+    </>;
 }
 
 const PopupButton = () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">

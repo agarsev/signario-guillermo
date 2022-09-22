@@ -4,13 +4,14 @@ const { getDB } = require('../common/back.js');
 
 const PAGE_SIZE = 50;
 
-let db, numPages;
+let db, numPages, totalCount, getFinished;
 
 const init = (async function () {
     db = await getDB();
     const res = db.prepare("SELECT COUNT(*) as count FROM signs;").get();
-    const count = parseInt(res.count);
-    numPages = Math.floor(count / PAGE_SIZE)+((count % PAGE_SIZE)?1:0);
+    totalCount = parseInt(res.count);
+    numPages = Math.floor(totalCount / PAGE_SIZE)+((totalCount % PAGE_SIZE)?1:0);
+    getFinished = db.prepare("SELECT COUNT(*) as count FROM signs WHERE notation IS NOT '';");
 })();
 
 contextBridge.exposeInMainWorld('back', {
@@ -25,7 +26,8 @@ contextBridge.exposeInMainWorld('back', {
             FROM signs ORDER BY ${order} ${asc?'ASC':'DESC'}
             LIMIT ${PAGE_SIZE} OFFSET ${page*PAGE_SIZE}
         ;`).all();
-        return { rows, numPages };
+        const finished = parseInt(getFinished.get().count)
+        return { rows, numPages, totalCount, finished };
     },
 
     setUserName: name => ipcRenderer.invoke('set_user_name', name)

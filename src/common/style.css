@@ -8,6 +8,7 @@
 }
 
 @layer components {
+    input[type=text] { @apply border border-gray-800/30 rounded; }
     #appRoot {
         @apply h-full flex flex-col;
         & > nav {
