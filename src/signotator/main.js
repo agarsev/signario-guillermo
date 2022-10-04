@@ -7,7 +7,7 @@ import { L } from './body.js';
 import { Dynam, Syllab } from './dynam.js';
 
 const tabs = { Q, O, L,
-    D: Dynam, S: Syllab,
+    M: Dynam, S: Syllab,
     "⚙": Options,
 };
 
