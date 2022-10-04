@@ -37,7 +37,7 @@ function useTable () {
 const MAX_TABS = 15;
 function App () {
     const table = useTable();
-    return <>
+    return <div className="flex flex-col">
         <Header table={table} />
         <nav>
             <span className="h-8 py-1 mr-1">Página:</span>
@@ -58,7 +58,7 @@ function App () {
         <div className="overflow-y-auto">
             <SignTable table={table} />
         </div>
-    </>;
+    </div>;
 }
 
 function SignTable ({ table }) {

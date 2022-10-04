@@ -1,4 +1,4 @@
-build: ENV=NODE_ENV=development
+ENV:=NODE_ENV=development
 
 all:
 	echo "build o frontend"
@@ -17,7 +17,6 @@ clean:
 .SECONDEXPANSION:
 
 dist/%/index.html: tailwind.config.js $(wildcard src/common/*) $$(wildcard src/$$*/*)
-	echo $^
 	@mkdir -p $(@D)
 	$(ENV) parcel build \
 		--no-autoinstall --no-content-hash --no-cache \

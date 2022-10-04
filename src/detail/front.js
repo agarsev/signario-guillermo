@@ -43,22 +43,31 @@ function DetailFront () {
         });
     };
 
-    return <>
-        <header className="p-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-            {info!==null ?
-                <Info update={updInfo} saveStatus={saveStatus}
-                    reset={() => updInfo(original_info, true)} {...info} /> :
-                <div></div>}
-            <VideoPlay />
-        </header>
-        <nav className="space-x-1">
-            <button className="p-2" disabled>Signotación</button>
-            <button className="p-2">Información Léxica</button>
+    const [ tab, setTab ] = useState("info");
+    function NavButton ({ name, code }) {
+        const cur = code == tab;
+        return <button className="p-2"
+            onClick={cur?null:() => setTab(code)}
+            disabled={cur}>{name}</button>;
+    }
+
+    let theTab;
+    if (tab == "info" && info != null) {
+        theTab = <Info update={updInfo} saveStatus={saveStatus}
+            reset={() => updInfo(original_info, true)} {...info} />;
+    } else if (tab == "signot") {
+        theTab = <ParamTab update={updInfo} {...info} />;
+    } else { theTab = <div></div>; }
+
+    return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto,auto,1fr] md:grid-rows-[auto,1fr]">
+        <div className="mt-3 md:row-span-2 md:col-start-2 bg-gray-300"><VideoPlay /></div>
+        <nav className="mt-3 space-x-1">
+            <NavButton name="Metadatos" code="info" />
+            <NavButton name="Signotación" code="signot" />
+            <NavButton name="Acepciones" code="lexic" />
         </nav>
-        <div className="p-2">
-            <ParamTab update={updInfo} {...info} />
-        </div>
-    </>;
+        <div className="p-2">{theTab}</div>
+    </div>;
 }
 
 function VideoPlay () {
