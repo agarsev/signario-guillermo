@@ -5,6 +5,7 @@ import { Direction, opposite } from "./space.js";
 export function L ({ done, options }) {
     const [name, setName] = useState(null);
     const [dir, setDir] = useState([]);
+    const [touch, setTouch] = useState(false);
     const fixDir = options.perspective == "obs" ?
         d => d :
         d => opposite[d];
@@ -14,10 +15,11 @@ export function L ({ done, options }) {
         if (isH2) res += "[]";
         else if (name != null) res += name;
         if (dir.length>0) res += dir.join('');
-        done(res+":", isH2?"Q":"D", isH2);
+        if (touch) res += "*";
+        done(res+":", isH2?"Q":"M", isH2);
     };
     return <div className="grid grid-cols-[2fr,1fr,auto] grid-rows-[1fr,auto]">
-        <svg className="w-full h-full col-start-1 col-end-3 row-start-1 row-end-3"
+        <svg className="w-full h-full col-start-1 col-end-3 row-start-1 row-end-4"
             viewBox="0 0 83 87">
             <defs>
                 <filter id="svgblur">
@@ -37,8 +39,10 @@ export function L ({ done, options }) {
         <div className="col-start-2 col-end-4 row-start-1">
             <Direction val={dir} set={setDir} options={options} />
         </div>
-        <button className="finish col-start-3 row-start-2 mr-2 mb-2"
-            disabled={name==null && dir.length==0}
+        <button className={`col-start-3 row-start-2 mb-2 ${touch?"actual":""}`}
+            onClick={() => setTouch(!touch)}>✳️</button>
+        <button className="finish col-start-3 row-start-3 mr-2 mb-2"
+            disabled={name==null && dir.length==0 && !touch}
             onClick={finish}>✔</button>
     </div>;
 }

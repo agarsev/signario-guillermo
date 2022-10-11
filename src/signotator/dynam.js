@@ -15,6 +15,7 @@ export function Dynam ({ done, options }) {
     const [evo, setEvo] = useState(null);
     const [gir, setGir] = useState(null);
     const [des, setDes] = useState(null);
+    const [touch, setTouch] = useState(false);
 
     const isArc = des == "()";
     const [d0, setD0] = useState([]);
@@ -31,7 +32,7 @@ export function Dynam ({ done, options }) {
         if (evo) next = "Q";
         else if (gir) next = "O";
         else if (des) next = "L";
-        done(`:${evo||''}:${gir||''}:${despl}:`, next)
+        done(`:${evo||''}:${gir||''}:${despl}${touch?"*":""}:`, next)
     }
 
     return <div><table><tbody>
@@ -58,9 +59,12 @@ export function Dynam ({ done, options }) {
                 <Direction val={isArc?d0:null} set={setD0} options={options} />
                 <Direction val={isArc&&d0.length!=0?d1:null} set={setD1} options={options} />
             </div></td>
-            <td className="!border-l"><button className="finish"
-                disabled={(!evo&&!gir&&!des) || (isArc && d0.length==0)}
-                onClick={finish}>✔</button>
+            <td className="!border-l">
+                <button className={`${touch?"actual":""} mb-3`}
+                    onClick={() => setTouch(!touch)}>✳️</button>
+                <button className="finish"
+                    disabled={(!evo&&!gir&&!des&&!touch) || (isArc && d0.length==0)}
+                    onClick={finish}>✔</button>
             </td>
         </tr>
     </tbody></table></div>;
