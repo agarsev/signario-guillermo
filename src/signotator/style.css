@@ -36,6 +36,7 @@
     @apply p-2;
     & .Arrow {
         vector-effect: non-scaling-stroke;
+        stroke-width: 1.30;
         @apply fill-secondary-200/50 stroke-secondary-600;
         &.enabled:hover { @apply cursor-pointer fill-secondary-300/80; }
         &.actual { @apply cursor-pointer stroke-secondary-600 fill-secondary-300; }
@@ -48,7 +49,7 @@
     }
     & .BodyOutline {
         vector-effect: non-scaling-stroke;
-        stroke-width: 1.25;
+        stroke-width: 1.50;
         @apply stroke-secondary-700;
     }
 }
