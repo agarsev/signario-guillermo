@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
 
-import { debounce } from '../common/front.js';
+import { debounce, useLocalStorage } from '../common/front.js';
 import Signotator from '../signotator/main.js';
 
 const saveDB = debounce(600);
@@ -46,7 +46,7 @@ function DetailFront () {
         setInfo(await back.createFlag(number, icon, name));
     };
 
-    const [ tab, setTab ] = useState("info");
+    const [ tab, setTab ] = useLocalStorage("detail_tab", "info");
     function NavButton ({ name, code }) {
         const cur = code == tab;
         return <button className="p-2"
@@ -109,7 +109,7 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
     </ul>;
 }
 
-function ParamTab ({ notation, toggleFlag }) {
+function ParamTab ({ update, notation }) {
     const notationInput = useRef();
     return <>
         <input className="text-lg p-1 mt-1 mb-3 w-full" type="text"

@@ -11,7 +11,7 @@ const init = (async function () {
             gloss = coalesce(:gloss, gloss),
             notation = coalesce(:notation, notation),
             modified_by = :modified_by,
-            modified_at = coalesce(:modified_at, CURRENT_TIMESTAMP)
+            modified_at = coalesce(:modified_at, datetime('now','localtime'))
             WHERE number = ?`);
         sql.getFlags = db.prepare(`SELECT flags.*,
             signFlags.sign is not null AS checked
