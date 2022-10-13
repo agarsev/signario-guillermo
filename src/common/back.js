@@ -28,9 +28,9 @@ function initDB () {
             PRIMARY KEY(sign, flag)
         );`);
         const ins = db.prepare("INSERT INTO flags (icon, name) VALUES (?, ?)");
-        ins.run("✔", "OK");
-        ins.run("⚠", "atención");
-        ins.run("⛔", "problema");
+        ins.run("✔\uFE0F", "OK");
+        ins.run("⚠\uFE0F", "atención");
+        ins.run("⛔\uFE0F", "problema");
     }
 
 }

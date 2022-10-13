@@ -19,6 +19,7 @@ const init = (async function () {
             ON flags.id = signFlags.flag AND signFlags.sign = ?;`);
         sql.flagAdd = db.prepare("INSERT OR IGNORE INTO signFlags(sign, flag) VALUES (?, ?)");
         sql.flagRemove = db.prepare("DELETE FROM signFlags WHERE sign = ? AND flag = ?");
+        sql.flagCreate = db.prepare("INSERT INTO flags(icon, name) VALUES (?, ?) RETURNING id").pluck();
     } catch (e) { console.error(e) };
 })();
 
@@ -39,8 +40,14 @@ contextBridge.exposeInMainWorld('back', {
             if (f.checked) sql.flagAdd.run(number, f.id);
             else sql.flagRemove.run(number, f.id);
         });
-        sql.update.run(number, {gloss,notation,modified_at,modified_by});
+        await sql.update.run(number, {gloss,notation,modified_at,modified_by});
         return getSign(number);
-    }
+    },
+
+    createFlag: async (number, icon, name) => {
+        const flid = await sql.flagCreate.get(icon, name);
+        await sql.flagAdd.run(number, flid);
+        return getSign(number);
+    },
 
 });

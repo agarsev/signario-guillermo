@@ -74,7 +74,10 @@ function SignTable ({ table }) {
         <tbody>
             {table.rows.length>0?
                 table.rows.map(r => <tr className="group" key={r.number}>
-                    <td className="text-sm text-secondary-800/80 group-hover:text-primary-600">{r.number}</td>
+                    <td className="flex">
+                        <span className="text-secondary-800/80 group-hover:text-primary-600">{r.number}</span>
+                        <span className="ml-auto font-[none]">{r.flag_icons}</span>
+                    </td>
                     <td className="truncate max-w-[40vw]">{r.gloss}</td>
                     <td className="truncate max-w-[40vw]">{r.notation}</td>
                     <td className="text-secondary-800 whitespace-nowrap">

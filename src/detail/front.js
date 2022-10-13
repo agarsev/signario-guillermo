@@ -42,6 +42,9 @@ function DetailFront () {
             msgDB.run(() => setSS(1));
         });
     };
+    const createFlag = async (icon, name) => {
+        setInfo(await back.createFlag(number, icon, name));
+    };
 
     const [ tab, setTab ] = useState("info");
     function NavButton ({ name, code }) {
@@ -53,7 +56,7 @@ function DetailFront () {
 
     let theTab;
     if (tab == "info" && info != null) {
-        theTab = <Info update={updInfo} saveStatus={saveStatus}
+        theTab = <Info update={updInfo} saveStatus={saveStatus} createFlag={createFlag}
             reset={() => updInfo(original_info, true)} {...info} />;
     } else if (tab == "signot") {
         theTab = <ParamTab update={updInfo} {...info} />;
@@ -77,14 +80,7 @@ function VideoPlay () {
     </video>;
 }
 
-function FlagIcon ({ icon, name, onClick }) {
-    const className = (onClick==null?"cursor-default":"");
-    return <button className={className} title={name}
-        style={{fontFamily:"none"}}
-        onClick={onClick}>{icon+"\uFE0F"}</button>;
-}
-
-function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, flags }) {
+function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, flags, createFlag }) {
     const [flOpen,setFlOpen] = useState(false);
     const toggleFlag = id => {
         const nufls = flags.slice();
@@ -107,15 +103,13 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
         <li><button className="pill" disabled={saveStatus==0} onClick={reset}>Revertir todos los cambios</button></li>
         <li className="ml-2 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</li>
         <li className="border-t border-primary-600 mt-1 pt-1">
-            <button onClick={() => setFlOpen(!flOpen)}>Editar banderas</button>
+            <button className="pill" onClick={() => setFlOpen(!flOpen)}>Editar banderas</button>
         </li>
-        {flOpen?<li>{flags.filter(f => !f.checked).map(f => <FlagIcon {...f} key={f.id}
-            onClick={() => toggleFlag(f.id)} />)}
-        </li>:null}
+        {flOpen?<FlagsDiv flags={flags} toggleFlag={toggleFlag} createFlag={createFlag} />:null}
     </ul>;
 }
 
-function ParamTab ({ notation, update }) {
+function ParamTab ({ notation, toggleFlag }) {
     const notationInput = useRef();
     return <>
         <input className="text-lg p-1 mt-1 mb-3 w-full" type="text"
@@ -123,4 +117,38 @@ function ParamTab ({ notation, update }) {
             onChange={e => update({notation: e.target.value})} />
         <Signotator inputRef={notationInput} updateVal={notation => update({notation})} />
     </>;
+}
+
+function FlagsDiv ({ flags, toggleFlag, createFlag }) {
+    const [emoji,setEmoji] = useState("");
+    const [desc,setDesc] = useState("");
+    const fixEmoji = e => {
+        try {
+            const char = String.fromCodePoint(e.target.value?.codePointAt(0));
+            setEmoji(char?(char+"\uFE0F"):"");
+        } catch { setEmoji(""); }
+    }
+    const create = e => {
+        createFlag(emoji, desc);
+        setEmoji(""); setDesc("");
+        e.preventDefault();
+    };
+    return <>
+        <li className="italic text-sm tex-grey-800">Haz click en las banderas activas para quitarlas, click aquí para añadirlas. El emoji lo puedes buscar en emojipedia.com.</li>
+        <li>{flags.filter(f => !f.checked).map(f => <FlagIcon {...f} key={f.id}
+            onClick={() => toggleFlag(f.id)} />)}</li>
+        <li><form onSubmit={create}>
+            <input name="icon" type="text" className="w-[2em]"
+                onChange={fixEmoji} value={emoji} />
+            <input name="desc" type="text" placeholder="descripción"
+                onChange={e => setDesc(e.target.value)} value={desc} />
+            <button disabled={!emoji || !desc} className="!py-0 ml-1 pill">Crear</button>
+        </form></li>
+    </>;
+}
+
+function FlagIcon ({ icon, name, onClick }) {
+    const className = "font-[none]"+(onClick==null?" cursor-default":"");
+    return <button className={className} title={name}
+        onClick={onClick}>{icon}</button>;
 }

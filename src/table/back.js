@@ -22,9 +22,12 @@ contextBridge.exposeInMainWorld('back', {
         await init;
         const order = 'number';
         const asc = true;
-        const rows = db.prepare(`SELECT *
+        const rows = db.prepare(`SELECT signs.*, group_concat(flags.icon, '') AS flag_icons
             FROM signs
+            LEFT JOIN signFlags ON signs.number = signFlags.sign
+            LEFT JOIN flags ON flags.id = signFlags.flag
             ${search?`WHERE (notation GLOB '*${search}*') OR (gloss LIKE '%${search}%')`:''}
+            GROUP BY signs.number
             ORDER BY ${order} ${asc?'ASC':'DESC'}
             LIMIT ${PAGE_SIZE} OFFSET ${page*PAGE_SIZE}
         ;`).all();
