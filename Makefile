@@ -1,10 +1,10 @@
 ENV:=NODE_ENV=development
 
 all:
-	echo "build o frontend"
+	echo "package o frontend"
 
-build: ENV=NODE_ENV=production
-build: clean frontend
+package: ENV=NODE_ENV=production
+package: clean frontend
 	electron-builder -l -w
 
 frontend: dist/table/index.html dist/detail/index.html
@@ -12,7 +12,7 @@ frontend: dist/table/index.html dist/detail/index.html
 clean:
 	rm -rf dist
 
-.PHONY: all build frontend clean
+.PHONY: all package frontend clean
 
 .SECONDEXPANSION:
 
