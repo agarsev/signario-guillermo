@@ -77,9 +77,27 @@ function VideoPlay () {
     </video>;
 }
 
-function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus }) {
+function FlagIcon ({ icon, name, onClick }) {
+    const className = (onClick==null?"cursor-default":"");
+    return <button className={className} title={name}
+        style={{fontFamily:"none"}}
+        onClick={onClick}>{icon+"\uFE0F"}</button>;
+}
+
+function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, flags }) {
+    const [flOpen,setFlOpen] = useState(false);
+    const toggleFlag = id => {
+        const nufls = flags.slice();
+        const fl = nufls.findIndex(f => f.id == id);
+        const old_flag = flags[fl];
+        nufls[fl] = { ...old_flag, checked: !old_flag.checked };
+        update({ flags: nufls });
+    };
     return <ul className="space-y-1">
-        <li>Número: {number}</li>
+        <li>Número: {number}<span className="mr-2" />
+            {flags.filter(f => f.checked).map(f => <FlagIcon key={f.id} {...f}
+                onClick={flOpen?() => toggleFlag(f.id):null} />)}
+        </li>
         <li className="text-lg border-t border-primary-600 pt-1">Glosa:</li>
         <li className="text-lg border-b border-primary-600 pb-2">
             <input className="p-1 w-full" type="text" value={gloss}
@@ -88,6 +106,12 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus }) {
         <li>Entrada por <i>{modified_by}</i> el <i>{modified_at}</i></li>
         <li><button className="pill" disabled={saveStatus==0} onClick={reset}>Revertir todos los cambios</button></li>
         <li className="ml-2 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</li>
+        <li className="border-t border-primary-600 mt-1 pt-1">
+            <button onClick={() => setFlOpen(!flOpen)}>Editar banderas</button>
+        </li>
+        {flOpen?<li>{flags.filter(f => !f.checked).map(f => <FlagIcon {...f} key={f.id}
+            onClick={() => toggleFlag(f.id)} />)}
+        </li>:null}
     </ul>;
 }
 

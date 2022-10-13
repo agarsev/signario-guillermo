@@ -2,28 +2,45 @@ const { contextBridge } = require('electron');
 
 const { getDB } = require('../common/back.js');
 
-let db, sqlSelect, sqlUpdate;
+let db, sql = {};
 const init = (async function () {
     db = await getDB();
-    sqlSelect = db.prepare("SELECT * FROM signs WHERE number = ?");
-    sqlUpdate = db.prepare(`UPDATE signs SET
-        gloss = coalesce(:gloss, gloss),
-        notation = coalesce(:notation, notation),
-        modified_by = :modified_by,
-        modified_at = coalesce(:modified_at, CURRENT_TIMESTAMP)
-        WHERE number = ? RETURNING *`);
+    try {
+        sql.select = db.prepare("SELECT * FROM signs WHERE number = ?");
+        sql.update = db.prepare(`UPDATE signs SET
+            gloss = coalesce(:gloss, gloss),
+            notation = coalesce(:notation, notation),
+            modified_by = :modified_by,
+            modified_at = coalesce(:modified_at, CURRENT_TIMESTAMP)
+            WHERE number = ?`);
+        sql.getFlags = db.prepare(`SELECT flags.*,
+            signFlags.sign is not null AS checked
+            FROM flags LEFT JOIN signFlags
+            ON flags.id = signFlags.flag AND signFlags.sign = ?;`);
+        sql.flagAdd = db.prepare("INSERT OR IGNORE INTO signFlags(sign, flag) VALUES (?, ?)");
+        sql.flagRemove = db.prepare("DELETE FROM signFlags WHERE sign = ? AND flag = ?");
+    } catch (e) { console.error(e) };
 })();
+
+async function getSign (number) {
+    return {
+        ...await sql.select.get(number),
+        flags: await sql.getFlags.all(number)
+    };
+}
 
 contextBridge.exposeInMainWorld('back', {
 
-    select: async number => {
-        await init;
-        return sqlSelect.get(number);
-    },
+    select: async number => { await init; return getSign(number); },
 
-    update: async (number, {gloss,notation,modified_at,modified_by}) => {
+    update: async (number, {gloss,notation,modified_at,modified_by,flags}) => {
         await init;
-        return sqlUpdate.get(number, {gloss,notation,modified_at,modified_by});
+        if (flags) flags.forEach(f => {
+            if (f.checked) sql.flagAdd.run(number, f.id);
+            else sql.flagRemove.run(number, f.id);
+        });
+        sql.update.run(number, {gloss,notation,modified_at,modified_by});
+        return getSign(number);
     }
 
 });
