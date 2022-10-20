@@ -52,7 +52,7 @@ export function O ({ done, options }) {
             </td></tr>
             <tr><td colSpan="2" className="text-right"><button className="finish"
                 disabled={palmar.length==0 && distal.length==0}
-                onClick={() => done(`:${palmar.join('')}${distal.join('').toLowerCase()}:`, "L")}>✔</button>
+                onClick={() => done(palmar.join('')+distal.join('').toLowerCase(), "L")}>✔</button>
             </td></tr>
         </tbody>
     </table></div>;

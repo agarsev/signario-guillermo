@@ -23,31 +23,45 @@ export function Dynam ({ done, options }) {
     const [gir, setGir] = useState(null);
     const [des, setDes] = useState(null);
     const [touch, setTouch] = useState(false);
+    const [fore, setFore] = useState(false);
 
     const isArc = des && des[0] == "(";
     const [d0, setD0] = useState([]);
     const [d1, setD1] = useState([]);
 
-    function finish () {
-        let despl = "";
-        if (isArc && d1.length != 0) {
-            despl = `(${d0},${d1})`;
-        } else if (isArc) {
-            despl = `(${d0})`;
-        } else if (des) { despl = des; }
-        let next = "S";
-        if (evo) next = "Q";
-        else if (gir) next = "O";
-        else if (des) next = "L";
-        done(`:${evo||''}:${gir||''}:${despl}${touch?"*":""}:`, next)
-    }
+    const finish = () => {
+        let res = [];
+        let next;
+        if (evo) { next = "Q"; res.push(evo); }
+        if (gir) { next = next || "O"; res.push(gir); }
+        if (des) {
+            next = next || "L";
+            if (isArc && d1.length != 0) {
+                res.push(`(${d0},${d1})`);
+            } else if (isArc) {
+                res.push(`(${d0})`);
+            } else {
+                res.push(des);
+            }
+            if (touch) res[res.length-1] += "*";
+        }
+        if (!next) next = "S";
+        res = res.join(':');
+        if (fore) {
+            done((before, after) => {
+                const wordstart = before.lastIndexOf(" ")+1;
+                before = before.substring(0, wordstart)+"_"+before.substring(wordstart);
+                return [before+res, after, next];
+            });
+        } else { done(res, next); }
+    };
 
     return <div><table><tbody>
         <tr>
             <Choice val="<" actual={evo} set={setEvo} borders="b" />
             <Choice val=">" actual={evo} set={setEvo} borders="b" />
             <Choice val={evo?.includes("<")?"<w":evo?.includes(">")?">w":"w"} actual={evo} set={setEvo} borders="br" />
-            <td></td>
+            <td><button className={fore?"actual":""} onClick={() => setFore(!fore)}>_</button></td>
         </tr>
         <tr>
             <Choice val="$" actual={gir} set={setGir} borders="b" />
@@ -81,7 +95,7 @@ export function Dynam ({ done, options }) {
 export function Syllab ({ done, options }) {
     const [sym, setSym] = useState(null);
     const [rep, setRep] = useState(null);
-    const finish = () => done(`:${sym||''}${rep||''}`, "Q");
+    const finish = () => done(`${sym||''}${rep||''}`, "Q");
     return <div><table><tbody>
         <tr>
             <Choice val="=" actual={sym} set={setSym} borders="b" />

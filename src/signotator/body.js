@@ -10,13 +10,12 @@ export function L ({ done, options }) {
         d => d :
         d => opposite[d];
     const finish = () => {
-        const isH2 = name == "H2";
-        let res = ":";
-        if (isH2) res += "[]";
-        else if (name != null) res += name;
-        if (dir.length>0) res += dir.join('');
-        if (touch) res += "*";
-        done(res+":", isH2?"Q":"M", isH2);
+        const mod = dir.join('')+(touch?"*":"");
+        if (name == "H2") {
+            done((before, after) => [before+"[", "]"+mod+after, "Q"]);
+        } else {
+            done((name||"")+mod, "M")
+        }
     };
     return <div className="grid grid-cols-[2fr,1fr,auto] grid-rows-[1fr,auto]">
         <svg className="w-full h-full col-start-1 col-end-3 row-start-1 row-end-4"

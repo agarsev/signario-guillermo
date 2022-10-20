@@ -11,22 +11,30 @@ const tabs = { Q, O, L,
     "⚙": Options,
 };
 
-const fixColons = /:(?=[:\] ])|(?<=[\[ ]):|^:|:$/g;
-
 export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
     const [tab, setTab] = useState("Q");
     const Component = tabs[tab];
-    const appendSN = (SN, nextTab, inset) => {
+    const appendSN = (SN, nextTab) => {
         const ip = inputRef.current;
         const start = ip.selectionStart;
         const end = ip.selectionEnd;
         let before = ip.value.slice(0, start);
         let after = ip.value.slice(end);
-        const upd = (before + SN + after).replace(fixColons, "");
-        updateVal(upd);
+        if (before.length > 0 && !":[ ".includes(before[before.length-1])) {
+            before = before + ":";
+        }
+        if (after.length > 0 && !":] ".includes(after[0])) {
+            after = ":" + after;
+        }
+        if (typeof SN == "function") {
+            [before, after, nextTab] = SN(before, after);
+        } else {
+            before = before + SN;
+        }
+        updateVal(before+after);
         setTab(nextTab);
-        let pos = inset?before.length+2:upd.length-after.length;
+        let pos = before.length;
         ip.setSelectionRange(pos, pos);
         setTimeout(() => ip.setSelectionRange(pos, pos), 0);
     };
