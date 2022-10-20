@@ -84,7 +84,8 @@ function loadDetail ({ win, number }) {
     }
   });
 }
-ipcMain.handle('open_detail', (_, { number, reuse }) => {
+ipcMain.handle('open_detail', (e, { number, reuse }) => {
+  let w;
   if (detail_windows.length == 0 || !reuse) {
     const win = new BrowserWindow({
       webPreferences: {
@@ -93,9 +94,12 @@ ipcMain.handle('open_detail', (_, { number, reuse }) => {
       },
     });
     win.on('closed', () => { detail_windows = detail_windows.filter(w => w.win!==win); });
-    detail_windows.push({win});
+    w = {win};
+    detail_windows.push(w);
+  } else {
+    w = detail_windows.find(w => w.win.id == e.sender.id);
+    if (!w) w = detail_windows[detail_windows.length-1];
   }
-  const w = detail_windows[detail_windows.length-1];
   w.number = number;
   loadDetail(w);
 });

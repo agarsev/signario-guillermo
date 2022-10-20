@@ -1,4 +1,4 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 const { getDB } = require('../common/back.js');
 
@@ -20,6 +20,8 @@ const init = (async function () {
         sql.flagAdd = db.prepare("INSERT OR IGNORE INTO signFlags(sign, flag) VALUES (?, ?)");
         sql.flagRemove = db.prepare("DELETE FROM signFlags WHERE sign = ? AND flag = ?");
         sql.flagCreate = db.prepare("INSERT INTO flags(icon, name) VALUES (?, ?) RETURNING id").pluck();
+        sql.getNext = db.prepare("SELECT number FROM signs WHERE number > ? ORDER BY number ASC LIMIT 1").pluck();
+        sql.getPrev = db.prepare("SELECT number FROM signs WHERE number < ? ORDER BY number DESC LIMIT 1").pluck();
     } catch (e) { console.error(e) };
 })();
 
@@ -49,5 +51,10 @@ contextBridge.exposeInMainWorld('back', {
         await sql.flagAdd.run(number, flid);
         return getSign(number);
     },
+
+    advanceSign: async (number, backwards) => {
+        const next = await (backwards?sql.getPrev:sql.getNext).get(number);
+        ipcRenderer.invoke('open_detail', { number: next, reuse: true });
+    }
 
 });

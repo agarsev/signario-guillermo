@@ -30,6 +30,16 @@ function DetailFront () {
             setInfo(got_info);
             original_info = got_info;
         })();
+
+        const advance = e => {
+            if (e.ctrlKey && e.key=="Enter") {
+                back.advanceSign(number, false);
+            } else if (e.ctrlKey && e.key=="Backspace") {
+                back.advanceSign(number, true);
+            }
+        };
+        addEventListener("keyup", advance);
+        return () => removeEventListener("keyup", advance);
     }, []);
     const updInfo = (upd, keep_name) => {
         if (!keep_name) upd.modified_by = user_name;
@@ -62,9 +72,10 @@ function DetailFront () {
         theTab = <ParamTab update={updInfo} {...info} />;
     } else { theTab = <div></div>; }
 
-    return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto,auto,1fr] md:grid-rows-[auto,1fr]">
-        <div className="mt-3 md:row-span-2 md:col-start-2 bg-gray-300"><VideoPlay /></div>
-        <nav className="mt-3 space-x-1">
+    return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto,auto,auto,1fr] md:grid-rows-[auto,auto,1fr]">
+        <h1 className="font-bold p-2">{info?.gloss}</h1>
+        <div className="md:mt-3 md:row-span-3 md:col-start-2 bg-gray-300"><VideoPlay /></div>
+        <nav className="mt-3 md:mt-0 space-x-1">
             <NavButton name="Metadatos" code="info" />
             <NavButton name="Signotación" code="signot" />
             <NavButton name="Acepciones" code="lexic" />
