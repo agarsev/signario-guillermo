@@ -75,7 +75,20 @@ function DetailFront () {
 
 function VideoPlay () {
     const video_src = `${video_dir}/${number.substring(0,3)}/${number.substring(3)}.mp4`;
-    return <video className="cursor-pointer" muted autoPlay controls >
+    const vid = useRef(null);
+    useEffect(() => {
+        const replay = e => {
+            const v = vid.current;
+            if (e.key == ' ') {
+                if (v.paused) v.play();
+                else v.pause();
+            }
+        };
+        vid.current.addEventListener('keyup', replay);
+        addEventListener('keyup', replay);
+        return () => removeEventListener('keyup', replay);
+    }, []);
+    return <video ref={vid} className="cursor-pointer" muted autoPlay controls >
         <source src={video_src} />
     </video>;
 }

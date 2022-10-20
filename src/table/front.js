@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
 import { useState, useEffect } from "react";
 
+import { useLocalStorage } from '../common/front.js';
+
 const urlParams = (new URL(document.location)).searchParams;
 const user_name = urlParams.get('user_name') || 'anon';
 
@@ -8,7 +10,7 @@ function useTable () {
 
     const [ isLoading, setIsLoading ] = useState(true);
     const [ query, setQuery ] = useState(null);
-    const [ page, setPage ] = useState(0);
+    const [ page, setPage ] = useLocalStorage("table_page", 0);
     const [ data, setData ] = useState({
         rows: [],
         numPages: 1,
