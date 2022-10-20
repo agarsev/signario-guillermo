@@ -73,7 +73,10 @@ function DetailFront () {
     } else { theTab = <div></div>; }
 
     return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto,auto,auto,1fr] md:grid-rows-[auto,auto,1fr]">
-        <h1 className="font-bold p-2">{info?.gloss}</h1>
+        <h1 className="p-2">
+            <span className="font-bold">{info?.gloss}</span>
+            <span className="ml-3 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</span>
+        </h1>
         <div className="md:mt-3 md:row-span-3 md:col-start-2 bg-gray-300"><VideoPlay /></div>
         <nav className="mt-3 md:mt-0 space-x-1">
             <NavButton name="Metadatos" code="info" />
@@ -90,9 +93,10 @@ function VideoPlay () {
     useEffect(() => {
         const replay = e => {
             const v = vid.current;
-            if (e.key == ' ') {
+            if (e.key == 'Enter') {
                 if (v.paused) v.play();
                 else v.pause();
+                e.preventDefault();
             }
         };
         vid.current.addEventListener('keyup', replay);
@@ -125,7 +129,6 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
         </li>
         <li>Entrada por <i>{modified_by}</i> el <i>{modified_at}</i></li>
         <li><button className="pill" disabled={saveStatus==0} onClick={reset}>Revertir todos los cambios</button></li>
-        <li className="ml-2 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</li>
         <li className="border-t border-primary-600 mt-1 pt-1">
             <button className="pill" onClick={() => setFlOpen(!flOpen)}>Editar banderas</button>
         </li>

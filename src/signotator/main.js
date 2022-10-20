@@ -26,8 +26,7 @@ export default function Signotator ({ inputRef, updateVal }) {
         const upd = (before + SN + after).replace(fixColons, "");
         updateVal(upd);
         setTab(nextTab);
-        let pos = upd.length-after.length;
-        if (inset) pos -= 1;
+        let pos = inset?before.length+2:upd.length-after.length;
         ip.setSelectionRange(pos, pos);
         setTimeout(() => ip.setSelectionRange(pos, pos), 0);
     };

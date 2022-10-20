@@ -100,7 +100,7 @@ export function Q ({ done }) {
                                   ["pi", "ip", "T", ["r", "", true]],   // iprO
                                   ["ic", "ci", "R", ["", "", false]]]} />
             </td><td className="!border-l !border-b">
-                <ToggleButton enabled={["ic", "ica", "icam", "pi", "pic", "picam"].includes(picam)}
+                <ToggleButton enabled={["ic", "ica", "icam", "pi", "pc", "pic", "picam"].includes(picam)}
                     actual={touch=="-"} display="-"
                     onClick={() => setTouch("-")} />
             </td><td className="!border-r !border-b">

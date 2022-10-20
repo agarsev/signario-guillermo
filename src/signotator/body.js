@@ -49,10 +49,10 @@ export function L ({ done, options }) {
 
 function AreaPath ({ name, dir, path, curName, setName, curDir, setDir }) {
     const isCur = name == curName &&
-        ((curDir !== null && curDir[0] == dir) || (curDir == dir));
+        ((!dir) || (curDir !== null && curDir[0] == dir) || (curDir == dir));
     const click = isCur ?
         () => { setName(null); setDir([]); } :
-        () => { setName(name); setDir([dir]); };
+        () => { setName(name); setDir(dir?[dir]:[]); };
     return <path stroke="none" fill="none" d={path}
         onClick={click} className={`Locus ${isCur?"actual":''}`}
     />;
