@@ -55,14 +55,15 @@
 }
 
 .signotation {
-    font-family: monospace;
-    color: purple;
-    & .sep { color: black; }
-    & .h2 { color: maroon; }
-    & .q { color: red; }
-    & .o { color: blue; }
-    & .l { color: green; }
-    & .c { color: olive; }
-    & .sym { color: gold; }
-    & .dyn { color: orange; }
+    @apply font-mono;
+    color: #ef4444;
+    & .q { color: #9d174d; }
+    & .o { color: #3f6212; }
+    & .l { color: #0f766e; }
+    & .c { color: #db2777; }
+    & :is(.e, .g, .d) { color: #92400e; }
+    & .arc { color: #b45309; }
+    & .h2 { color: #1d4ed8; }
+    & :is(.sep, .sym, .dyn) { color: #5b21b6; }
+    & .unknown { font-weight: bold; }
 }

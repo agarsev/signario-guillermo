@@ -1,18 +1,20 @@
 const Q = "_?[PpIiCcAaMm]+[-rg#+O]*";
-const O = "[HhLlFfBbXxYx]+";
+const O = "[HhLlFfBbXxYy]+";
+const dir = "[HLFBXY]"
 
 const grammar = [
+    [ "\\[[^\\]]*\\]", "h2" ],
     [ `(${Q}):(${O})`, r => [["q", r[1]], ["sep", ":"], ["o", r[2]]] ],
-    [ "[A-Z][a-z]{2}[HLFBXY]*", "l" ],
-    [ "[HLFBXY]+(?![hlfbxy])", "l" ],
-    [ Q, "q" ],
-    [ O, "o" ],
+    [ `[A-Z][a-z]{2}${dir}*`, "l" ],
+    [ `${dir}+(?![hlfbxy])`, "l" ],
+    [ Q, "q" ], [ O, "o" ],
+    [ "[><w]w?", "e"], [ "[$%/8]", "g"], [ "[-?[>23]", "d"],
+    [ `[(]${dir}+[)]`, "arc"], [ `[(]${dir}+,${dir}+[)]`, "arc"], 
     [ "[*]", "c" ],
     [ "[=~&]", "sym" ],
     [ "[RN!]", "dyn" ],
-    [ "[[\\]]", "h2" ],
     [ "[: ]", "sep" ],
-    [ "[^: *]+" ]
+    [ "[^: *]+", "unknown" ]
 ];
 
 grammar.forEach(rule => { rule[0] = new RegExp("^"+rule[0]); });
