@@ -53,3 +53,16 @@
         @apply stroke-secondary-700;
     }
 }
+
+.signotation {
+    font-family: monospace;
+    color: purple;
+    & .sep { color: black; }
+    & .h2 { color: maroon; }
+    & .q { color: red; }
+    & .o { color: blue; }
+    & .l { color: green; }
+    & .c { color: olive; }
+    & .sym { color: gold; }
+    & .dyn { color: orange; }
+}

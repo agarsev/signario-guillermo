@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import { useState, useEffect } from "react";
 
 import { useLocalStorage } from '../common/front.js';
+import { Signotation } from '../signotator/highlight.js';
+import '../signotator/style.css';
 
 const urlParams = (new URL(document.location)).searchParams;
 const user_name = urlParams.get('user_name') || 'anon';
@@ -81,7 +83,7 @@ function SignTable ({ table }) {
                         <span className="ml-auto font-[none]">{r.flag_icons}</span>
                     </td>
                     <td className="truncate max-w-[40vw]">{r.gloss}</td>
-                    <td className="truncate max-w-[40vw]">{r.notation}</td>
+                    <td className="truncate max-w-[40vw]"><Signotation sn={r.notation} /></td>
                     <td className="text-secondary-800 whitespace-nowrap">
                         <button className="align-middle hover:text-primary-700 mr-1" onClick={() => back.openDetail(r.number, true)}><EditButton /></button>
                         <button className="align-middle hover:text-primary-700" onClick={() => back.openDetail(r.number, false)}><PopupButton /></button>
