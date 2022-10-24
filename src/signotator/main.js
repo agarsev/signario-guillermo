@@ -3,7 +3,7 @@ import { useState } from "react";
 import './style.css';
 import { Q } from './q.js';
 import { O } from './space.js';
-import { L } from './body.js';
+import { L, isInH2 } from './body.js';
 import { Dynam, Syllab } from './dynam.js';
 
 const tabs = { Q, O, L,
@@ -15,6 +15,24 @@ export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
     const [tab, setTab] = useState("Q");
     const Component = tabs[tab];
+    const setCursor = pos => {
+        const ip = inputRef.current;
+        ip.setSelectionRange(pos, pos);
+        setTimeout(() => ip.setSelectionRange(pos, pos), 0);
+    };
+    const clickTab = tab => { // If we change segment and inside a H2 bracket, move cursor too
+        setTab(tab);
+        if (!"MS".includes(tab)) return;
+        const ip = inputRef.current;
+        const start = ip.selectionStart;
+        const end = ip.selectionEnd;
+        if (start != end) return;
+        const before = ip.value.slice(0, start);
+        const after = ip.value.slice(end);
+        if (!isInH2(before, after)) return;
+        let endword = after.indexOf(" ");
+        setCursor(before.length+(endword>=0?endword:after.length));
+    };
     const appendSN = (SN, nextTab) => {
         const ip = inputRef.current;
         const start = ip.selectionStart;
@@ -34,15 +52,13 @@ export default function Signotator ({ inputRef, updateVal }) {
         }
         updateVal(before+after);
         setTab(nextTab);
-        let pos = before.length;
-        ip.setSelectionRange(pos, pos);
-        setTimeout(() => ip.setSelectionRange(pos, pos), 0);
+        setCursor(before.length);
     };
     return <div className="Signotator" onClick={e => {
         e.preventDefault(); e.stopPropagation(); inputRef.current.focus();
         }} >
         <nav>{Object.keys(tabs).map(seg=> <button key={seg}
-                disabled={tab==seg} onClick={() => setTab(seg)}>
+                disabled={tab==seg} onClick={() => clickTab(seg)}>
             {seg}</button>)}</nav>
         <Component done={appendSN} options={options} setOptions={setOptions} />
     </div>;

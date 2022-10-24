@@ -1,6 +1,13 @@
 import { useState } from "react";
 
-import { Direction, opposite } from "./space.js";
+import { Direction, rotate } from "./space.js";
+
+export function isInH2 (before, after) {
+    const open = before.lastIndexOf("[");
+    if (open < 0) return false;
+    if (open < before.lastIndexOf("]")) return false;
+    return true;
+}
 
 export function L ({ done, options }) {
     const [name, setName] = useState(null);
@@ -8,7 +15,7 @@ export function L ({ done, options }) {
     const [touch, setTouch] = useState(false);
     const fixDir = options.perspective == "obs" ?
         d => d :
-        d => opposite[d];
+        d => rotate(d);
     const finish = () => {
         const mod = dir.join('')+(touch?"*":"");
         if (name == "H2") {

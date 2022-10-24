@@ -1,19 +1,31 @@
 import { useState } from "react";
 
-export const opposite = {
+import { isInH2 } from "./body.js";
+
+const opposite = {
     F: "B", B: "F",
     X: "Y", Y: "X",
     H: "L", L: "H"
+};
+
+export function rotate (dir) {
+    if ("HL".includes(dir)) return dir;
+    return opposite[dir];
+}
+
+export function mirror (dir) {
+    if (dir=="Y") return "X";
+    if (dir=="X") return "Y";
+    return dir;
 }
 
 export function Direction ({ val, set, options }) {
     const invert = options.perspective == "obs";
     function Arrow({ invariant, dir, path }) {
-        let opo = opposite[dir];
-        if (invert && !invariant) {
-            opo = dir;
-            dir = opposite[dir];
+        if (options.perspective=="obs") {
+            dir = rotate(dir);
         }
+        const opo = opposite[dir];
         let cn = "Arrow";
         let click = null;
         if (val === null) {
@@ -42,6 +54,18 @@ export function Direction ({ val, set, options }) {
 export function O ({ done, options }) {
     const [palmar, setPalmar] = useState([]);
     const [distal, setDistal] = useState([]);
+    const finish = () => done((before, after) => {
+        let p, d;
+        if (isInH2(before, after)) {
+            p = palmar.map(mirror);
+            d = distal.map(mirror);
+        } else {
+            p = palmar; d = distal;
+        }
+        return [before+p.join('')+d.join('').toLowerCase(),
+            after, "L"];
+    });
+
     return <div><table>
         <tbody>
             <tr><th>Palma</th><th>Dedos</th></tr>
@@ -52,7 +76,7 @@ export function O ({ done, options }) {
             </td></tr>
             <tr><td colSpan="2" className="text-right"><button className="finish"
                 disabled={palmar.length==0 && distal.length==0}
-                onClick={() => done(palmar.join('')+distal.join('').toLowerCase(), "L")}>✔</button>
+                onClick={finish}>✔</button>
             </td></tr>
         </tbody>
     </table></div>;
