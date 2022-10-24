@@ -24,6 +24,7 @@ function useTable () {
         const load = async () => {
             try {
                 setData(await back.select(page, query));
+                if (page > data.numPages) setPage(data.numPages-1);
             } catch (e) { console.error(e); }
             setIsLoading(false);
         }

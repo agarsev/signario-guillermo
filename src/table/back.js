@@ -4,15 +4,18 @@ const { getDB } = require('../common/back.js');
 
 const PAGE_SIZE = 50;
 
-let db, numPages, totalCount, getFinished;
+let db, totalCount, getFinished;
 
 const init = (async function () {
     db = await getDB();
-    const res = db.prepare("SELECT COUNT(*) as count FROM signs;").get();
-    totalCount = parseInt(res.count);
-    numPages = Math.floor(totalCount / PAGE_SIZE)+((totalCount % PAGE_SIZE)?1:0);
-    getFinished = db.prepare("SELECT COUNT(*) as count FROM signs WHERE notation IS NOT '';");
+    totalCount = parseInt(db.prepare("SELECT COUNT(*) FROM signs;").pluck().get());
+    getFinished = db.prepare("SELECT COUNT(*) FROM signs WHERE notation IS NOT '';").pluck();
 })();
+
+function sqlWhere (search) {
+    if (!search) return '';
+    return `WHERE (notation GLOB '*${search}*') OR (gloss LIKE '%${search}%')`;
+}
 
 contextBridge.exposeInMainWorld('back', {
 
@@ -22,16 +25,21 @@ contextBridge.exposeInMainWorld('back', {
         await init;
         const order = 'number';
         const asc = true;
+        const where = sqlWhere(search);
+
         const rows = db.prepare(`SELECT signs.*, group_concat(flags.icon, '') AS flag_icons
             FROM signs
             LEFT JOIN signFlags ON signs.number = signFlags.sign
             LEFT JOIN flags ON flags.id = signFlags.flag
-            ${search?`WHERE (notation GLOB '*${search}*') OR (gloss LIKE '%${search}%')`:''}
-            GROUP BY signs.number
+            ${where} GROUP BY signs.number
             ORDER BY ${order} ${asc?'ASC':'DESC'}
             LIMIT ${PAGE_SIZE} OFFSET ${page*PAGE_SIZE}
         ;`).all();
-        const finished = parseInt(getFinished.get().count)
+
+        const count = parseInt(db.prepare(`SELECT COUNT(*) FROM signs ${where};`).pluck().get());
+        const numPages = Math.floor(count / PAGE_SIZE)+((count % PAGE_SIZE)?1:0);
+
+        const finished = parseInt(getFinished.get())
         return { rows, numPages, totalCount, finished };
     },
 
