@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { useLocalStorage } from '../common/front.js';
 import { Signotation } from '../signotator/highlight.js';
@@ -7,6 +7,8 @@ import '../signotator/style.css';
 
 const urlParams = (new URL(document.location)).searchParams;
 const user_name = urlParams.get('user_name') || 'anon';
+
+const PAGE_SIZE = 50;
 
 function useTable () {
 
@@ -23,18 +25,22 @@ function useTable () {
     useEffect(() => {
         const load = async () => {
             try {
-                setData(await back.select(page, query));
-                if (page > data.numPages) setPage(data.numPages-1);
+                const nudata = await back.select(query);
+                nudata.numPages = Math.floor(nudata.rows.length / PAGE_SIZE)
+                    +((nudata.rows.length % PAGE_SIZE)?1:0);
+                if (page > nudata.numPages) setPage(nudata.numPages-1);
+                setData(nudata);
             } catch (e) { console.error(e); }
             setIsLoading(false);
         }
         load();
         const listener = window.addEventListener("focus", load);
         return () => window.removeEventListener("focus", load);
-    }, [page, query]);
+    }, [query]);
 
-    return { ...data, page,
-        goto: setPage,
+    return { ...data,
+        rows: data.rows.slice(page*PAGE_SIZE, (page+1)*PAGE_SIZE),
+        page, goto: setPage,
         search: setQuery,
     };
 }
@@ -115,11 +121,6 @@ function Header ({ table }) {
         setEditingName(false);
         e.preventDefault();
     };
-    const search = e => {
-        const query = e.target.querySelector('input[type="text"]').value.trim();
-        table.search(query);
-        e.preventDefault();
-    };
     return <header className="grid grid-cols-[auto,auto,1fr] py-3 px-2 gap-1">
         <h1 className="text-primary-800 text-xl font-bold row-start-1 col-start-1 col-end-3">Signario - Guillermo</h1>
         <div className="col-start-3 row-start-1 row-end-4"></div>
@@ -131,8 +132,7 @@ function Header ({ table }) {
                 onClick={startEditName}><EditButton />
             </button></span>
         }
-        <span className="mr-1">Filtro:</span>
-        <form onSubmit={search}><input type="text" /></form>
+        <TableFilter search={table.search} />
     </header>;
 }
 
@@ -164,5 +164,40 @@ const EditButton = () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20
   <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
   <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
 </svg>;
+
+function TableFilter ({ search }) {
+    const form = useRef();
+    const [flags, setFlags] = useState([]);
+    useEffect(() => {
+        back.getFlags().then(setFlags);
+    }, []);
+    const [flagSelection, setFlagSelection] = useState([]);
+    const toggleFlag = i => {
+        const fs = flagSelection.slice();
+        fs[i] = !flagSelection[i];
+        setFlagSelection(fs);
+    };
+    const submit = () => {
+        const f = form.current;
+        const query = {
+            gloss: f["gloss"].value.trim(),
+            notation: f["notation"].value.trim(),
+            flags: flags.filter(fl => f[fl.name].checked).map(fl => fl.id),
+        }
+        search(query);
+    };
+    return <>
+        <span className="mr-1">Filtro:</span>
+        <form ref={form} onChange={submit} >
+            <input name="gloss" type="text" placeholder="glosa" />
+            <input name="notation" type="text" placeholder="signotación" className="ml-1" />
+            {flags.map(({icon,name}, i) => <label key={i} title={name} className="ml-2">
+                <input name={name} type="checkbox" checked={flagSelection[i]||false}
+                    onChange={() => toggleFlag(i)} />
+                <span className="ml-1 font-[none]">{icon}</span>
+            </label>)}
+        </form>
+    </>;
+}
 
 createRoot(document.getElementById("appRoot")).render(<App />);
