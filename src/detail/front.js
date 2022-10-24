@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 import { debounce, useLocalStorage } from '../common/front.js';
 import Signotator from '../signotator/main.js';
+import { Signotation } from '../signotator/highlight.js';
 
 const saveDB = debounce(600);
 const msgDB = debounce(3500);
@@ -138,10 +139,18 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
 
 function ParamTab ({ update, notation }) {
     const notationInput = useRef();
+    const hili = useRef();
     return <>
-        <input className="text-lg p-1 mt-1 mb-3 w-full" type="text"
-            value={notation || ""} ref={notationInput}
-            onChange={e => update({notation: e.target.value})} />
+        <div className="text-lg mt-1 mb-3 relative">
+            <div ref={hili} className="p-1 w-full pointer-events-none bg-white rounded whitespace-nowrap overflow-hidden">
+                <Signotation sn={notation || ""} />
+            </div>
+            <input className="p-1 w-full font-mono absolute top-0 bg-transparent" type="text"
+                style={{color: "transparent", caretColor: "black" }}
+                value={notation || ""} ref={notationInput}
+                onScroll={e => { hili.current.scrollLeft = e.target.scrollLeft; }}
+                onChange={e => update({notation: e.target.value})} />
+        </div>
         <Signotator inputRef={notationInput} updateVal={notation => update({notation})} />
     </>;
 }
