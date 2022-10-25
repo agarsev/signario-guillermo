@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -42,7 +42,7 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
     role: 'paste',
   }]
 },{
-  role: 'window',
+  role: 'windowMenu',
   submenu: [{
     role: 'reload',
   }, {
@@ -51,6 +51,19 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
     type: 'separator'
   }, {
     role: 'toggleDevTools',
+  }]
+}, {
+  role: 'help',
+  submenu: [{
+    label: 'Manual',
+    click: async () => shell.openExternal("https://github.com/agarsev/signario-guillermo/wiki")
+  }, {
+    label: 'Acerca de Guillermo',
+    click: async (_, win) => dialog.showMessageBox(win, {
+      title: "Guillermo",
+      type: "info",
+      message: `\nGuillermo v${app.getVersion()}\n© Signario 2022\nContacto: afgs@ucm.es`
+    })
   }]
 }]));
 
