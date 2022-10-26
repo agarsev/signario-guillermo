@@ -52,7 +52,12 @@ export default function Signotator ({ inputRef, updateVal }) {
         }
         updateVal(before+after);
         setTab(nextTab);
-        setCursor(before.length);
+        if (isInH2(before, after) && "MS".includes(nextTab)) {
+            let endword = after.indexOf(" ");
+            setCursor(before.length+(endword>=0?endword:after.length));
+        } else {
+            setCursor(before.length);
+        }
     };
     return <div className="Signotator" onClick={e => {
         e.preventDefault(); e.stopPropagation(); inputRef.current.focus();

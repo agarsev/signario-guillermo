@@ -143,7 +143,7 @@ function ParamTab ({ update, notation }) {
     return <>
         <div className="text-lg mt-1 mb-3 relative">
             <div ref={hili} className="p-1 w-full pointer-events-none bg-white rounded whitespace-nowrap overflow-hidden">
-                <Signotation sn={notation || ""} />
+                <Signotation sn={notation || "\u00A0"} />
             </div>
             <input className="p-1 w-full font-mono absolute top-0 bg-transparent" type="text"
                 style={{color: "transparent", caretColor: "black" }}

@@ -43,8 +43,8 @@ export function Dynam ({ done, options }) {
             } else {
                 res.push(des);
             }
-            if (touch) res[res.length-1] += "*";
         }
+        if (touch) res[res.length-1] += "*";
         if (!next) next = "S";
         res = res.join(':');
         if (fore) {
