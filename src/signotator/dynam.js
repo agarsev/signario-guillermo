@@ -85,7 +85,7 @@ export function Dynam ({ done, options }) {
                 <button className={`${touch?"actual":""} mb-3`}
                     onClick={() => setTouch(!touch)}>✳️</button>
                 <button className="finish"
-                    disabled={(!evo&&!gir&&!des&&!touch) || (isArc && d0.length==0)}
+                    disabled={isArc && d0.length==0}
                     onClick={finish}>✔</button>
             </td>
         </tr>
@@ -110,7 +110,6 @@ export function Syllab ({ done, options }) {
         <tr>
             <td colSpan="2"></td>
             <td className="!border-l"><button className="finish"
-                disabled={!sym && !rep}
                 onClick={finish}>✔</button>
             </td>
         </tr>

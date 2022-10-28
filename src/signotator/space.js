@@ -54,17 +54,23 @@ export function Direction ({ val, set, options }) {
 export function O ({ done, options }) {
     const [palmar, setPalmar] = useState([]);
     const [distal, setDistal] = useState([]);
-    const finish = () => done((before, after) => {
-        let p, d;
-        if (isInH2(before, after)) {
-            p = palmar.map(mirror);
-            d = distal.map(mirror);
+    const finish = () => {
+        if (palmar.length == 0 && distal.length == 0) {
+            done("", "L");
         } else {
-            p = palmar; d = distal;
+            done((before, after) => {
+                let p, d;
+                if (isInH2(before, after)) {
+                    p = palmar.map(mirror);
+                    d = distal.map(mirror);
+                } else {
+                    p = palmar; d = distal;
+                }
+                return [before+p.join('')+d.join('').toLowerCase(),
+                    after, "L"];
+            });
         }
-        return [before+p.join('')+d.join('').toLowerCase(),
-            after, "L"];
-    });
+    }
 
     return <div><table>
         <tbody>
@@ -75,7 +81,6 @@ export function O ({ done, options }) {
                 <Direction val={distal} set={setDistal} options={options} />
             </td></tr>
             <tr><td colSpan="2" className="text-right"><button className="finish"
-                disabled={palmar.length==0 && distal.length==0}
                 onClick={finish}>✔</button>
             </td></tr>
         </tbody>

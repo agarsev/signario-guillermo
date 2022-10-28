@@ -17,7 +17,15 @@ export function Q ({ done }) {
     const [others, setOthers] = useState(false);
     function reset() { setPicam(null); setFlex(""); setTouch(""); setOthers(false); }
     function finish() {
-        done(`${flex===""?picam.toUpperCase():picam}${flex!=="c"?flex:""}${touch}${others?"O":""}`, "O");
+        let q = "";
+        if (picam) {
+            if (flex == "") q = picam.toUpperCase();
+            else q = picam;
+            if (flex !== "c") q += flex;
+            q += touch;
+            if (others) q+= "O";
+        }
+        done(q, "O");
     }
 
     function SelButton ({ opts }) { // current picam, value to set, display, holistic set r+O
@@ -120,7 +128,7 @@ export function Q ({ done }) {
             </td><td>
                 <SelButton opts={[[null, "pi", "LL", ["g", "+", false]]]} />
             </td><td className="!border-l">
-                <button className="finish" disabled={picam===null} onClick={finish}>✔</button>
+                <button className="finish" onClick={finish}>✔</button>
             </td></tr>
         </tbody>
     </table></div>;

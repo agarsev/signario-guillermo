@@ -39,10 +39,10 @@ export default function Signotator ({ inputRef, updateVal }) {
         const end = ip.selectionEnd;
         let before = ip.value.slice(0, start);
         let after = ip.value.slice(end);
-        if (before.length > 0 && !":[ ".includes(before[before.length-1])) {
+        if (SN.length > 0 && before.length > 0 && !":[ ".includes(before[before.length-1])) {
             before = before + ":";
         }
-        if (after.length > 0 && !":] ".includes(after[0])) {
+        if (SN.length > 0 && after.length > 0 && !":] ".includes(after[0])) {
             after = ":" + after;
         }
         if (typeof SN == "function") {

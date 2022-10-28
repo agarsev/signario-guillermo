@@ -48,7 +48,6 @@ export function L ({ done, options }) {
         <button className={`col-start-3 row-start-2 mb-2 ${touch?"actual":""}`}
             onClick={() => setTouch(!touch)}>✳️</button>
         <button className="finish col-start-3 row-start-3 mr-2 mb-2"
-            disabled={name==null && dir.length==0 && !touch}
             onClick={finish}>✔</button>
     </div>;
 }
