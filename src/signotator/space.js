@@ -19,6 +19,8 @@ export function mirror (dir) {
     return dir;
 }
 
+const dirOrder = ["H", "L", "B", "F", "Y", "X"];
+
 export function Direction ({ val, set, options }) {
     const invert = options.perspective == "obs";
     function Arrow({ invariant, dir, path }) {
@@ -37,7 +39,7 @@ export function Direction ({ val, set, options }) {
             cn += " disabled";
         } else {
             cn += " enabled";
-            click = () => set(val.concat([dir]));
+            click = () => set(val.concat([dir]).sort((a, b) => dirOrder.indexOf(a)-dirOrder.indexOf(b)));
         }
         return <path d={path} className={cn} onClick={click} />;
     }
