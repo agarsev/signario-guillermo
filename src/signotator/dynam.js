@@ -95,7 +95,12 @@ export function Dynam ({ done, options }) {
 export function Syllab ({ done, options }) {
     const [sym, setSym] = useState(null);
     const [rep, setRep] = useState(null);
-    const finish = () => done(`${sym||''}${rep||''}`, "Q");
+    const finish = () => {
+        let ret = [];
+        if (sym) ret.push(sym);
+        if (rep) ret.push(rep);
+        done(ret.length>0?ret.join(':'):'', "Q");
+    }
     return <div><table><tbody>
         <tr>
             <Choice val="=" actual={sym} set={setSym} borders="b" />
