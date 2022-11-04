@@ -29,15 +29,15 @@
      fit-margin-left="5"
      fit-margin-right="2"
      fit-margin-bottom="2"
-     inkscape:zoom="1.2810465"
-     inkscape:cx="112.40809"
-     inkscape:cy="214.27793"
-     inkscape:window-width="1920"
-     inkscape:window-height="1080"
-     inkscape:window-x="0"
-     inkscape:window-y="360"
+     inkscape:zoom="5.124186"
+     inkscape:cx="142.07135"
+     inkscape:cy="66.352002"
+     inkscape:window-width="2560"
+     inkscape:window-height="1415"
+     inkscape:window-x="1920"
+     inkscape:window-y="25"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer3"
      viewbox-y="0" />
   <defs
      id="defs2" />
@@ -51,6 +51,10 @@
        style="fill:#a74949;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.408;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers stroke fill;stop-color:#000000"
        d="m 53.001981,60.126668 c 2e-6,-6.76312 -6.91835,-12.496561 -16.613496,-14.510985 0,0 -1.900484,-0.297573 -1.985156,-5.038578 4.99458,-1.500959 9.097154,-5.164635 11.281382,-9.966446 0.416103,0.0282 0.784933,0.06827 1.164629,0.06827 2.511836,0 4.159713,-1.801395 4.159713,-3.964631 -1e-6,-1.997253 -1.456821,-3.606138 -3.762903,-3.757691 C 47.055039,13.170325 39.009332,5.203999 29.10299,5.204 c -9.809109,1e-6 -17.793928,7.810709 -18.115186,17.607484 -2.284128,0.296675 -3.740948,1.90556 -3.740949,3.902813 0,2.163236 1.647877,3.964631 4.159713,3.964631 0.379696,0 0.748526,-0.04007 1.100017,-0.163245 2.03662,4.646632 6.016079,8.312384 10.955534,9.953016 0.06725,4.788469 -1.534566,5.119965 -1.534566,5.119965 C 12.28992,47.492216 5.204,53.282138 5.204,60.126668 v 24.20956 m 47.797981,-24.20956 v 17.0953 h 14.304737 v -4.52418 c 0,-2.09149 2.553575,-2.11102 2.553575,0 v 2.89314 h 6.293234 c 6.403862,0 6.385782,8.74108 -1.639134,8.74108 l -30.60412,0.004 -38.706273,2.2e-4"
        sodipodi:nodetypes="csccsscscssccccccsccsssccc" />
+    <path
+       id="Car"
+       style="fill:#acf141;stroke-width:1.0766;stroke-linecap:round;stroke-linejoin:round;paint-order:markers stroke fill;stop-color:#000000"
+       d="M 45.752348,23.17885 A 16.517948,16.517948 0 0 1 29.2344,39.696799 16.517948,16.517948 0 0 1 12.716451,23.17885 16.517948,16.517948 0 0 1 29.2344,6.6609018 16.517948,16.517948 0 0 1 45.752348,23.17885 Z" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -106,7 +110,7 @@
        style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:#da0fff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.408001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers stroke fill;stop-color:#000000;stop-opacity:1"
        d="m 28.945519,36.577095 c -2.562448,0.04152 -5.790072,0.787683 -6.877099,3.407026 4.34992,1.842604 9.411424,1.903476 13.803809,0.165365 -0.926581,-2.750722 -4.370795,-3.526877 -6.92671,-3.572391 z" />
     <path
-       id="Fre"
+       id="Cab"
        style="font-variation-settings:normal;display:inline;vector-effect:none;fill:#da0fff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.408001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers stroke fill;stop-color:#000000"
        d="M 28.935147,12.814888 C 26.372699,12.773368 18.807021,11.820278 17.719994,9.2009348 22.706141,4.0840396 33.843487,3.3721302 40.029883,8.8978775 39.103302,11.6486 31.491062,12.769374 28.935147,12.814888 Z"
        sodipodi:nodetypes="cccc" />
@@ -142,6 +146,10 @@
        id="Boc"
        style="fill:#f8ff0f;stroke-width:0.408001;stroke-linecap:round;stroke-linejoin:round;paint-order:markers stroke fill;stop-color:#000000"
        d="m 37.091933,34.874306 a 8.1936769,2.5605254 0 0 1 -8.193677,2.560525 8.1936769,2.5605254 0 0 1 -8.193677,-2.560525 8.1936769,2.5605254 0 0 1 8.193677,-2.560526 8.1936769,2.5605254 0 0 1 8.193677,2.560526 z" />
+    <path
+       id="Fre"
+       style="display:inline;fill:#f8ff0f;stroke-width:0.604101;stroke-linecap:round;stroke-linejoin:round;paint-order:markers stroke fill;stop-color:#000000"
+       d="M 39.349368,12.820174 A 10.227102,4.4972953 0 0 1 29.122266,17.317468 10.227102,4.4972953 0 0 1 18.895164,12.820174 10.227102,4.4972953 0 0 1 29.122266,8.3228765 10.227102,4.4972953 0 0 1 39.349368,12.820174 Z" />
     <path
        id="OjoX"
        style="fill:#c90fff;stroke-width:0.408001;stroke-linecap:round;stroke-linejoin:round;paint-order:markers stroke fill;stop-color:#000000"
