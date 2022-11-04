@@ -5,7 +5,8 @@ all:
 
 package: ENV=NODE_ENV=production
 package: clean frontend
-	electron-builder -l -w
+	electron-builder -w
+	electron-builder -l
 
 frontend: dist/table/index.html dist/detail/index.html
 

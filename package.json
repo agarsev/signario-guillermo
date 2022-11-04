@@ -1,7 +1,7 @@
 {
   "name": "guillermo",
-  "version": "0.3.1",
-  "description": "",
+  "version": "0.3.2",
+  "description": "Guillermo: aplicación de gestión de la BD del Signario",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
