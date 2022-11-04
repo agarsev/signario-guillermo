@@ -194,7 +194,12 @@ async function mergeDB (_, win) {
   if (conflicts > 0) {
     const msg = dialog.showMessageBox(win, {
       title: "Mezclando base de datos",
-      message: `Ha habido ${conflicts} conflictos. Ver informe completo en ${report_path}.`,
+      message: `Base de datos mezclada con éxito, pero ha habido ${conflicts} conflictos. Ver informe completo en ${report_path}.`,
+    });
+  } else {
+    const msg = dialog.showMessageBox(win, {
+      title: "Mezclando base de datos",
+      message: `Base de datos mezclada sin conflictos.`,
     });
   }
 

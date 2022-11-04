@@ -11,21 +11,19 @@ exports.mainGetDB = function () {
 }
 
 exports.initDB = function () {
-    try {
-        const db = exports.mainGetDB();
-        db.pragma("foreign_keys = ON");
-        const version = db.pragma("user_version", {simple:true});
+    const db = exports.mainGetDB();
+    db.pragma("foreign_keys = ON");
+    const version = db.pragma("user_version", {simple:true});
 
-        if (version<1 && !db.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='flags'").pluck().get()) {
-            createFlags();
-        }
-        if (version<1) createMerge();
+    if (version<1 && !db.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='flags'").pluck().get()) {
+        createFlags(db);
+    }
+    if (version<1) createMerge(db);
 
-        db.pragma("user_version = 1");
-    } catch (err) { console.error(err); }
+    db.pragma("user_version = 1");
 }
 
-function createFlags() {
+function createFlags(db) {
     db.exec(`CREATE TABLE flags (
             id INTEGER PRIMARY KEY,
             icon TEXT NOT NULL,
@@ -42,10 +40,12 @@ function createFlags() {
     ins.run("⛔\uFE0F", "problema");
 }
 
-function createMerge() {
-    db.exec(`CREATE TABLE config (
-        key TEXT NOT NULL UNIQUE,
-        value TEXT
-    );`);
-    db.prepare("INSERT INTO config(key, value) VALUES (?, ?)").run("last_merge", "2022-09-03");
+function createMerge(db) {
+    try {
+        db.exec(`CREATE TABLE config (
+            key TEXT NOT NULL UNIQUE,
+            value TEXT
+        );`);
+        db.prepare("INSERT INTO config(key, value) VALUES (?, ?)").run("last_merge", "2022-09-03");
+    } catch (err) { console.error(err); }
 }
