@@ -58,9 +58,15 @@ export function Dynam ({ done, options }) {
 
     return <div><table><tbody>
         <tr>
-            <Choice val="<" actual={evo} set={setEvo} borders="b" />
-            <Choice val=">" actual={evo} set={setEvo} borders="b" />
-            <Choice val={evo?.includes("<")?"<w":evo?.includes(">")?">w":"w"} actual={evo} set={setEvo} borders="br" />
+            <Choice val="<" actual={evo} set={setEvo} />
+            <Choice val=">" actual={evo} set={setEvo} />
+            <Choice val={evo?.includes("<")?"<w":evo?.includes(">")?">w":"w"} actual={evo} set={setEvo} borders="r" />
+            <td></td>
+        </tr>
+        <tr>
+            <Choice val="^" actual={evo} set={setEvo} borders="b" />
+            <Choice val="7" actual={evo} set={setEvo} borders="b" />
+            <Choice val="+" actual={evo} set={setEvo} borders="br" />
             <td><button className={fore?"actual":""} onClick={() => setFore(!fore)}>_</button></td>
         </tr>
         <tr>
