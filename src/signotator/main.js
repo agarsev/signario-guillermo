@@ -11,6 +11,8 @@ const tabs = { Q, O, L,
     "⚙": Options,
 };
 
+const endSegment = /:|.(?= )/;
+
 export default function Signotator ({ inputRef, updateVal }) {
     const [options, setOptions] = useLocalStorage("signotator-opts", DEF_OPTIONS);
     const [tab, setTab] = useState("Q");
@@ -30,8 +32,8 @@ export default function Signotator ({ inputRef, updateVal }) {
         const before = ip.value.slice(0, start);
         const after = ip.value.slice(end);
         if (!isInH2(before, after)) return;
-        let endword = after.indexOf(" ");
-        setCursor(before.length+(endword>=0?endword:after.length));
+        const endseg = after.search(endSegment);
+        setCursor(before.length+(endseg>=0?endseg+1:after.length));
     };
     const appendSN = (SN, nextTab) => {
         const ip = inputRef.current;
@@ -53,8 +55,8 @@ export default function Signotator ({ inputRef, updateVal }) {
         updateVal(before+after);
         setTab(nextTab);
         if (isInH2(before, after) && "MS".includes(nextTab)) {
-            let endword = after.indexOf(" ");
-            setCursor(before.length+(endword>=0?endword:after.length));
+            const endseg = after.search(endSegment);
+            setCursor(before.length+(endseg>=0?endseg+1:after.length));
         } else {
             setCursor(before.length);
         }

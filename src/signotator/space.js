@@ -56,23 +56,21 @@ export function Direction ({ val, set, options }) {
 export function O ({ done, options }) {
     const [palmar, setPalmar] = useState([]);
     const [distal, setDistal] = useState([]);
-    const finish = () => {
-        if (palmar.length == 0 && distal.length == 0) {
-            done("", "L");
-        } else {
-            done((before, after) => {
-                let p, d;
-                if (isInH2(before, after)) {
-                    p = palmar.map(mirror);
-                    d = distal.map(mirror);
-                } else {
-                    p = palmar; d = distal;
-                }
-                return [before+p.join('')+d.join('').toLowerCase(),
-                    after, "L"];
-            });
+    const finish = () => done((before, after) => {
+        let res = before;
+        const H2 = isInH2(before, after);
+        if (palmar.length != 0 || distal.length != 0) {
+            let p, d;
+            if (H2) {
+                p = palmar.map(mirror);
+                d = distal.map(mirror);
+            } else {
+                p = palmar; d = distal;
+            }
+            res += p.join('')+d.join('').toLowerCase();
         }
-    }
+        return [res, after, H2?"M":"L"];
+    });
 
     return <div><table>
         <tbody>
