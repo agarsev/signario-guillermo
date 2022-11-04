@@ -1,23 +1,32 @@
-const { ipcRenderer } = require('electron');
+const { app, ipcRenderer } = require('electron');
 const Sqlite = require('better-sqlite3');
-
-let db = null;
+const path = require('path');
 
 exports.getDB = async function () {
-    if (db == null) {
-        db = Sqlite(await ipcRenderer.invoke('get_db_path'));
-    }
-    initDB();
-    return db;
+    return Sqlite(await ipcRenderer.invoke('get_db_path'));
 }
 
-function initDB () {
-    db.pragma("foreign_keys = ON");
+exports.mainGetDB = function () {
+    return Sqlite(path.join(app.getPath('userData'), 'signario.db'));
+}
 
-    // Flags
-    if (!db.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='flags'")
-        .pluck().get()) {
-        db.exec(`CREATE TABLE flags (
+exports.initDB = function () {
+    try {
+        const db = exports.mainGetDB();
+        db.pragma("foreign_keys = ON");
+        const version = db.pragma("user_version", {simple:true});
+
+        if (version<1 && !db.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='flags'").pluck().get()) {
+            createFlags();
+        }
+        if (version<1) createMerge();
+
+        db.pragma("user_version = 1");
+    } catch (err) { console.error(err); }
+}
+
+function createFlags() {
+    db.exec(`CREATE TABLE flags (
             id INTEGER PRIMARY KEY,
             icon TEXT NOT NULL,
             name TEXT NOT NULL
@@ -27,10 +36,16 @@ function initDB () {
             flag INTEGER NOT NULL REFERENCES flags(id) ON DELETE CASCADE,
             PRIMARY KEY(sign, flag)
         );`);
-        const ins = db.prepare("INSERT INTO flags (icon, name) VALUES (?, ?)");
-        ins.run("✔\uFE0F", "OK");
-        ins.run("⚠\uFE0F", "atención");
-        ins.run("⛔\uFE0F", "problema");
-    }
+    const ins = db.prepare("INSERT INTO flags (icon, name) VALUES (?, ?)");
+    ins.run("✔\uFE0F", "OK");
+    ins.run("⚠\uFE0F", "atención");
+    ins.run("⛔\uFE0F", "problema");
+}
 
+function createMerge() {
+    db.exec(`CREATE TABLE config (
+        key TEXT NOT NULL UNIQUE,
+        value TEXT
+    );`);
+    db.prepare("INSERT INTO config(key, value) VALUES (?, ?)").run("last_merge", "2022-09-03");
 }

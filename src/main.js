@@ -2,6 +2,9 @@ const { app, BrowserWindow, Menu, dialog, ipcMain, shell } = require('electron')
 const fs = require('fs');
 const path = require('path');
 
+const do_merge_db = require('./merge_db.js');
+const { initDB } = require('./common/back.js');
+
 const prefs_path = path.join(app.getPath('userData'), "preferencias.json");
 let prefs = {}
 try {
@@ -19,6 +22,9 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
     click: setVideoDir
   }, {
     type: 'separator'
+  }, {
+    label: 'Mezclar BD',
+    click: mergeDB
   }, {
     label: 'Exportar BD',
     click: exportDB
@@ -70,6 +76,7 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
 
 let main_window = null;
 app.whenReady().then(() => {
+  initDB();
   main_window = new BrowserWindow({
     webPreferences: {
       spellcheck: false,
@@ -164,3 +171,33 @@ ipcMain.handle('set_user_name', (_, name) => {
     detail_windows.forEach(loadDetail);
     reload_main();
 });
+
+async function mergeDB (_, win) {
+  const res = await dialog.showOpenDialog(win, {
+    title: "Mezclar base de datos",
+    properties: ['openFile']
+  });
+  if (res.canceled) return;
+
+  let aborter = new AbortController();
+  const msg = dialog.showMessageBox(win, {
+    signal: aborter.signal,
+    title: "Mezclando base de datos",
+    message: "Mezclando cambios de las bases de datos... por favor espera.",
+  });
+  detail_windows.forEach(({win}) => win.close());
+
+  const [conflicts, report_path] = await do_merge_db(res.filePaths[0]);
+  aborter.abort();
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  if (conflicts > 0) {
+    const msg = dialog.showMessageBox(win, {
+      title: "Mezclando base de datos",
+      message: `Ha habido ${conflicts} conflictos. Ver informe completo en ${report_path}.`,
+    });
+  }
+
+  reload_main();
+}
+
