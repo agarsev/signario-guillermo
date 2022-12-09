@@ -20,7 +20,9 @@ exports.initDB = function () {
     }
     if (version<1) createMerge(db);
 
-    db.pragma("user_version = 1");
+    if (version<2) createAttachments(db);
+
+    db.pragma("user_version = 2");
 }
 
 function createFlags(db) {
@@ -41,11 +43,18 @@ function createFlags(db) {
 }
 
 function createMerge(db) {
-    try {
-        db.exec(`CREATE TABLE config (
-            key TEXT NOT NULL UNIQUE,
-            value TEXT
-        );`);
-        db.prepare("INSERT INTO config(key, value) VALUES (?, ?)").run("last_merge", "2022-09-03");
-    } catch (err) { console.error(err); }
+    db.exec(`CREATE TABLE config (
+        key TEXT NOT NULL UNIQUE,
+        value TEXT
+    );`);
+    db.prepare("INSERT INTO config(key, value) VALUES (?, ?)").run("last_merge", "2022-09-03");
+}
+
+function createAttachments(db) {
+    db.exec(`CREATE TABLE attachments (
+        id INTEGER PRIMARY KEY,
+        sign INTEGER NOT NULL REFERENCES signs(number),
+        type TEXT NOT NULL,
+        content BLOB
+    );`);
 }

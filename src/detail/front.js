@@ -56,6 +56,12 @@ function DetailFront () {
     const createFlag = async (icon, name) => {
         setInfo(await back.createFlag(number, icon, name));
     };
+    const newDefinition = async () => {
+        setInfo(await back.newAttachment(number, 'definition', ''));
+    };
+    const rmDefinition = async id => {
+        setInfo(await back.rmAttachment(number, id));
+    };
 
     const [ tab, setTab ] = useLocalStorage("detail_tab", "info");
     function NavButton ({ name, code }) {
@@ -71,7 +77,10 @@ function DetailFront () {
             reset={() => updInfo(original_info, true)} {...info} />;
     } else if (tab == "signot") {
         theTab = <ParamTab update={updInfo} {...info} />;
-    } else { theTab = <div></div>; }
+    } else {
+        theTab = <LexicTab newDefinition={newDefinition} rmDefinition={rmDefinition}
+            definitions={info?.attachments?.filter(a => a.type == 'definition')||[]} />;
+    }
 
     return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto,auto,auto,1fr] md:grid-rows-[auto,auto,1fr]">
         <h1 className="p-2">
@@ -187,4 +196,21 @@ function FlagIcon ({ icon, name, onClick }) {
     const className = "font-[none]"+(onClick==null?" cursor-default":"");
     return <button className={className} title={name}
         onClick={onClick}>{icon}</button>;
+}
+
+function LexicTab ({ newDefinition, rmDefinition, definitions }) {
+    const [editing, setEditing] = useState(null);
+    const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2";
+    const defstyle = "border border-secondary-600 p-2 rounded cursor-pointer flex-1 mr-2";
+    return <>
+        {definitions.map((d, i) => <div key={i} className="flex mb-3">
+            {editing==i?
+                <textarea autoFocus className={defstyle} />:
+                <div className={defstyle} onClick={() => setEditing(i)}>
+                    {d.content}
+                </div>}
+            <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(null); }}>-</button>
+        </div>)}
+        <button className={butstyle} onClick={() => { newDefinition(); setEditing(definitions.length); }}>+</button>
+    </>;
 }
