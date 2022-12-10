@@ -239,7 +239,7 @@ function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions }) 
                     onKeyDown={e => { if (e.key=="Enter") finish(e); }}
                     onBlur={finish} onChange={e => setCurText(e.target.value)}
                 />:
-                <div className={defstyle} onClick={() => startEdit(i)}
+                <div className={defstyle+" prose prose-zinc prose-amber leading-snug"} onClick={() => startEdit(i)}
                     dangerouslySetInnerHTML={{__html: marked.parse(d.content)}}
                 />}
             <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(-1); }}>-</button>
