@@ -32,6 +32,9 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
     label: 'Importar BD',
     click: importDB
   }, {
+    label: 'Publicar BD',
+    click: publishDB
+  }, {
     type: 'separator'
   }, {
     role: 'quit'
@@ -211,3 +214,39 @@ async function mergeDB (_, win) {
   reload_main();
 }
 
+async function publishDB (_, win) {
+  const { default: fetch, FormData, fileFromSync } = await import('node-fetch');
+  let UPLOAD_TOKEN = prefs.UPLOAD_TOKEN;
+  let res;
+  if (UPLOAD_TOKEN) {
+    res = await dialog.showMessageBox(win, {
+      message: "Utilizar credenciales almacenadas?",
+      buttons: ["Sí", "No"]
+    });
+    if (res.canceled) return;
+    if (res.response == 1) UPLOAD_TOKEN=null;
+  }
+  if (!UPLOAD_TOKEN) {
+    res = await dialog.showOpenDialog(win, {
+      title: "Seleccionar fichero de credenciales",
+      properties: ['openFile']
+    });
+    if (res.canceled) return;
+    const creds = JSON.parse(fs.readFileSync(res.filePaths[0]));
+    prefs.set('UPLOAD_TOKEN', creds.UPLOAD_TOKEN);
+    prefs.set('UPLOAD_URL', creds.UPLOAD_URL);
+    UPLOAD_TOKEN = creds.UPLOAD_TOKEN;
+  }
+  const body = new FormData();
+  body.set("UPLOAD_TOKEN", UPLOAD_TOKEN);
+  body.set("DATABASE", fileFromSync(db_path));
+  res = await fetch(prefs.UPLOAD_URL, { method: 'POST', body});
+  if (res.status != 200) {
+    dialog.showErrorBox("Error", "No se ha podido publicar la base de datos.");
+  } else {
+    dialog.showMessageBox(win, {
+      title: "OK",
+      message: "Base de datos publicada con éxito.",
+    });
+  }
+}
