@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
+import marked from "marked";
 
 import { debounce, useLocalStorage } from '../common/front.js';
 import Signotator from '../signotator/main.js';
@@ -62,6 +63,21 @@ function DetailFront () {
     const rmDefinition = async id => {
         setInfo(await back.rmAttachment(number, id));
     };
+    const updDefinition = async definition => {
+        const attachments = info.attachments.slice();
+        attachments[attachments.findIndex(el => el.id == definition.id)] = definition;
+        setInfo({
+            ...info, attachments,
+            modified_by: user_name,
+        });
+        setSS(2);
+        msgDB.clear();
+        saveDB.run(async () => {
+            setInfo(await back.updAttachment(number, definition));
+            setSS(3);
+            msgDB.run(() => setSS(1));
+        });
+    };
 
     const [ tab, setTab ] = useLocalStorage("detail_tab", "info");
     function NavButton ({ name, code }) {
@@ -79,6 +95,7 @@ function DetailFront () {
         theTab = <ParamTab update={updInfo} {...info} />;
     } else {
         theTab = <LexicTab newDefinition={newDefinition} rmDefinition={rmDefinition}
+            updDefinition={updDefinition}
             definitions={info?.attachments?.filter(a => a.type == 'definition')||[]} />;
     }
 
@@ -198,18 +215,34 @@ function FlagIcon ({ icon, name, onClick }) {
         onClick={onClick}>{icon}</button>;
 }
 
-function LexicTab ({ newDefinition, rmDefinition, definitions }) {
-    const [editing, setEditing] = useState(null);
+function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions }) {
     const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2";
-    const defstyle = "border border-secondary-600 p-2 rounded cursor-pointer flex-1 mr-2";
+    const defstyle = "border border-secondary-600 bg-gray-100 p-2 rounded cursor-pointer flex-1 mr-2";
+    const [editing, setEditing] = useState(-1);
+    const [curText, setCurText] = useState("");
+    const startEdit = i => {
+        setCurText(definitions[i].content);
+        setEditing(i);
+    };
+    const finish = e => {
+        if (editing<0) return;
+        updDefinition({ ...definitions[editing], content: curText });
+        setEditing(null);
+        setCurText("");
+        e.preventDefault();
+        e.stopPropagation();
+    };
     return <>
         {definitions.map((d, i) => <div key={i} className="flex mb-3">
             {editing==i?
-                <textarea autoFocus className={defstyle} />:
-                <div className={defstyle} onClick={() => setEditing(i)}>
-                    {d.content}
-                </div>}
-            <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(null); }}>-</button>
+                <textarea autoFocus className={defstyle} value={curText}
+                    onKeyDown={e => { if (e.key=="Enter") finish(e); }}
+                    onBlur={finish} onChange={e => setCurText(e.target.value)}
+                />:
+                <div className={defstyle} onClick={() => startEdit(i)}
+                    dangerouslySetInnerHTML={{__html: marked.parse(d.content)}}
+                />}
+            <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(-1); }}>-</button>
         </div>)}
         <button className={butstyle} onClick={() => { newDefinition(); setEditing(definitions.length); }}>+</button>
     </>;
