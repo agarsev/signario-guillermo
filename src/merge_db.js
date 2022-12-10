@@ -57,6 +57,11 @@ module.exports = async function merge_db (db_to_merge) {
       JOIN flag_map ON old_flag = main.signFlags.flag
       JOIN to_merge ON to_merge.number = main.signFlags.sign`);
 
+  // Add attachments with no conflict
+  db.prepare(`INSERT OR REPLACE INTO new_db.attachments
+    SELECT our.* FROM to_merge
+    JOIN main.attachments AS our ON our.sign = to_merge.number`);
+
   db.prepare("UPDATE new_db.config SET value = datetime('now') WHERE key == 'last_merge'").run();
   db.close();
   

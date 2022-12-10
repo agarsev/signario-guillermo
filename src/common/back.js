@@ -52,9 +52,10 @@ function createMerge(db) {
 
 function createAttachments(db) {
     db.exec(`CREATE TABLE attachments (
-        id INTEGER PRIMARY KEY,
         sign INTEGER NOT NULL REFERENCES signs(number),
+        id INTEGER NOT NULL,
         type TEXT NOT NULL,
-        content BLOB
+        content BLOB,
+        PRIMARY KEY(sign, id)
     );`);
 }

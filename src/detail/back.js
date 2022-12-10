@@ -22,10 +22,13 @@ const init = (async function () {
         sql.flagCreate = db.prepare("INSERT INTO flags(icon, name) VALUES (?, ?) RETURNING id").pluck();
         sql.getNext = db.prepare("SELECT number FROM signs WHERE number > ? ORDER BY number ASC LIMIT 1").pluck();
         sql.getPrev = db.prepare("SELECT number FROM signs WHERE number < ? ORDER BY number DESC LIMIT 1").pluck();
-        sql.getAttachments = db.prepare("SELECT * FROM attachments WHERE sign = ? ORDER BY id");
-        sql.newAttachment = db.prepare("INSERT INTO attachments(sign, type, content) VALUES (?, ?, ?)");
-        sql.rmAttachment = db.prepare("DELETE FROM attachments WHERE id = ?");
-        sql.updAttachment = db.prepare("UPDATE attachments SET content = ? WHERE id = ?");
+        sql.getAttachments = db.prepare("SELECT * FROM attachments WHERE sign = ? ORDER BY id ASC");
+        sql.newAttachment = db.prepare(`INSERT INTO attachments(sign, id, type, content)
+            SELECT :sign, COALESCE(MAX(id),-1)+1, :type, :content FROM attachments
+            WHERE sign = :sign
+            `);
+        sql.rmAttachment = db.prepare("DELETE FROM attachments WHERE sign = ? AND id = ?");
+        sql.updAttachment = db.prepare("UPDATE attachments SET content = ? WHERE sign = ? AND id = ?");
     } catch (e) { console.error(e) };
 })();
 
@@ -63,17 +66,17 @@ contextBridge.exposeInMainWorld('back', {
     },
 
     newAttachment: async (number, type, content) => {
-        await sql.newAttachment.run(number, type, content);
+        await sql.newAttachment.run({ sign: number, type, content });
         return getSign(number);
     },
 
     rmAttachment: async (number, id) => {
-        await sql.rmAttachment.run(id);
+        await sql.rmAttachment.run(number, id);
         return getSign(number);
     },
 
     updAttachment: async (number, { id, content }) => {
-        await sql.updAttachment.run(content, id);
+        await sql.updAttachment.run(content, number, id);
         return getSign(number);
     },
 
