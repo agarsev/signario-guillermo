@@ -95,7 +95,7 @@ function DetailFront () {
         theTab = <ParamTab update={updInfo} {...info} />;
     } else {
         theTab = <LexicTab newDefinition={newDefinition} rmDefinition={rmDefinition}
-            updDefinition={updDefinition}
+            updDefinition={updDefinition} gloss={info?.gloss||''}
             definitions={info?.attachments?.filter(a => a.type == 'definition')||[]} />;
     }
 
@@ -215,7 +215,7 @@ function FlagIcon ({ icon, name, onClick }) {
         onClick={onClick}>{icon}</button>;
 }
 
-function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions }) {
+function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions, gloss }) {
     const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2";
     const defstyle = "border border-secondary-600 bg-gray-100 p-2 rounded cursor-pointer flex-1 mr-2";
     const [editing, setEditing] = useState(-1);
@@ -233,6 +233,7 @@ function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions }) 
         e.stopPropagation();
     };
     return <>
+        {definitions.length==0?<p className="italic m-1 mb-2">Si no hay acepciones, se usará la glosa como única definición.</p>:null}
         {definitions.map((d, i) => <div key={i} className="flex mb-3">
             {editing==i?
                 <textarea autoFocus className={defstyle} value={curText}
@@ -244,6 +245,10 @@ function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions }) 
                 />}
             <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(-1); }}>-</button>
         </div>)}
-        <button className={butstyle} onClick={() => { newDefinition(); setEditing(definitions.length); }}>+</button>
+        <button className={butstyle} onClick={() => {
+            newDefinition();
+            setEditing(definitions.length);
+            if (definitions.length==0) setCurText(gloss);
+        }}>+</button>
     </>;
 }
