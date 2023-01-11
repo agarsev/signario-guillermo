@@ -32,16 +32,17 @@ export function Dynam ({ done, options }) {
     const finish = () => {
         let res = [];
         let next;
-        if (evo) { next = "Q"; res.push(evo); }
-        if (gir) { next = next || "O"; res.push(gir); }
+        if (evo) { res.push(evo); }
+        if (gir) { next = "O"; res.push(gir); }
         if (des) {
-            next = next || "L";
             if (isArc && d1.length != 0) {
                 res.push(`(${d0},${d1})`);
             } else if (isArc) {
                 res.push(`(${d0})`);
+                next = next || "L";
             } else {
                 res.push(des);
+                next = next || "L";
             }
         }
         if (touch) res[res.length-1] += "*";
