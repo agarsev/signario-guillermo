@@ -5,8 +5,8 @@ all:
 
 package: ENV=NODE_ENV=production
 package: clean frontend
-	electron-builder -w
-	electron-builder -l
+	npx electron-builder -w
+	npx electron-builder -l
 
 frontend: dist/table/index.html dist/detail/index.html
 
@@ -17,10 +17,8 @@ clean:
 
 .SECONDEXPANSION:
 
-dist/%/index.html: tailwind.config.js $(wildcard src/common/*) $$(wildcard src/$$*/*) $(wildcard src/signotator/*)
+dist/%/index.html: tailwind.config.js $(wildcard src/common/*) $$(wildcard src/$$*/*) $(wildcard ../signotator/src/*)
 	@mkdir -p $(@D)
-	$(ENV) parcel build \
+	$(ENV) npx parcel build \
 		--no-autoinstall --no-content-hash --no-cache \
 		--no-optimize --target $*
-
-dist/detail/index.html: $(wildcard src/signotator/*)

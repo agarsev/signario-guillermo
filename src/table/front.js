@@ -2,8 +2,7 @@ import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
 
 import { useLocalStorage } from '../common/front.js';
-import { Signotation } from '/lib/signotator.js';
-import '../signotator.css';
+import { Signotation } from 'signotator';
 
 const urlParams = (new URL(document.location)).searchParams;
 const user_name = urlParams.get('user_name') || 'anon';
