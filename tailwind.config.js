@@ -9,6 +9,9 @@ module.exports = {
       secondary: colors.violet,
       white: colors.white,
       transparent: 'transparent',
+      signotatormain: colors.amber,
+      signotatorbtns: colors.violet,
+      signotatorbg: colors.zinc[200],
       current: 'currentColor',
     }
   },
