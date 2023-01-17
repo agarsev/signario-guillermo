@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import marked from "marked";
 
 import { debounce, useLocalStorage } from '../common/front.js';
-import { Signotator, Signotation } from 'signotator';
+import { Signotator, SignotationInput } from 'signotator';
 
 const saveDB = debounce(600);
 const msgDB = debounce(3500);
@@ -164,20 +164,11 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
 
 function ParamTab ({ update, notation }) {
     const notationInput = useRef();
-    const hili = useRef();
-    return <>
-        <div className="text-lg mt-1 mb-3 relative">
-            <div ref={hili} className="p-1 w-full pointer-events-none bg-white rounded whitespace-nowrap overflow-hidden">
-                <Signotation sn={notation || "\u00A0"} />
-            </div>
-            <input className="p-1 w-full font-mono absolute top-0 bg-transparent" type="text"
-                style={{color: "transparent", caretColor: "black" }}
-                value={notation || ""} ref={notationInput}
-                onScroll={e => { hili.current.scrollLeft = e.target.scrollLeft; }}
-                onChange={e => update({notation: e.target.value})} />
-        </div>
-        <Signotator inputRef={notationInput} updateVal={notation => update({notation})} />
-    </>;
+    const updateNotation = x => update({notation: x});
+    return <div className="text-lg pt-1 space-y-3">
+        <SignotationInput inputRef={notationInput} value={notation} updateVal={updateNotation} />
+        <Signotator inputRef={notationInput} updateVal={updateNotation} />
+    </div>;
 }
 
 function FlagsDiv ({ flags, toggleFlag, createFlag }) {
