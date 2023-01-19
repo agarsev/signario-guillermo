@@ -117,11 +117,6 @@ ipcMain.handle('open_detail', (e, { number, reuse }) => {
       },
     });
     win.on('closed', () => { detail_windows = detail_windows.filter(w => w.win!==win); });
-    win.webContents.on('will-navigate', (e, url) => {
-      e.preventDefault();
-      const match = url.match(/signo\/([\d]+)/);
-      if (match) loadDetail({ win, number: match[1] });
-    });
     w = {win};
     detail_windows.push(w);
   } else {
