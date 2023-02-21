@@ -1,6 +1,8 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const { default: fetch, FormData, fileFromSync } = require('node-fetch-cjs');
+const https = require('https');
 
 const do_merge_db = require('./merge_db.js');
 const { initDB } = require('./common/back.js');
@@ -210,8 +212,6 @@ async function mergeDB (_, win) {
 }
 
 async function publishDB (_, win) {
-  const { default: fetch, FormData, fileFromSync } = await import('node-fetch');
-  const https = await import('https');
   let UPLOAD_TOKEN = prefs.UPLOAD_TOKEN;
   let res;
   if (UPLOAD_TOKEN) {
