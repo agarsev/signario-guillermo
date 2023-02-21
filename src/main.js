@@ -211,6 +211,7 @@ async function mergeDB (_, win) {
 
 async function publishDB (_, win) {
   const { default: fetch, FormData, fileFromSync } = await import('node-fetch');
+  const https = await import('https');
   let UPLOAD_TOKEN = prefs.UPLOAD_TOKEN;
   let res;
   if (UPLOAD_TOKEN) {
@@ -235,7 +236,12 @@ async function publishDB (_, win) {
   const body = new FormData();
   body.set("UPLOAD_TOKEN", UPLOAD_TOKEN);
   body.set("DATABASE", fileFromSync(db_path));
-  res = await fetch(prefs.UPLOAD_URL, { method: 'POST', body});
+  res = await fetch(prefs.UPLOAD_URL, {
+    method: 'POST',
+    agent: new https.Agent({ rejectUnauthorized: false }),
+    body
+  });
+
   if (res.status != 200) {
     dialog.showErrorBox("Error", "No se ha podido publicar la base de datos.");
   } else {
